@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""This file defines a new function"""
+
+
 def matrix_shape(matrix):
     """
     This function calculates the shape of a matrix.
