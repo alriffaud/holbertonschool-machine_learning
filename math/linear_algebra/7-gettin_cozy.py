@@ -14,7 +14,16 @@ def cat_matrices2D(mat1, mat2, axis=0):
         This function returns a new matrix. If the two matrices cannot be
         concatenated, return None.
     """
+    if not mat1 or not mat2:
+        return None
     if axis == 0:
+        n = len(mat1[0])
+        for i in range(len(mat1)):
+            if len(mat1[i]) != n:
+                return None
+        for i in range(len(mat2)):
+            if len(mat2[i]) != n:
+                return None
         return mat1 + mat2
     elif axis == 1:
         if len(mat1) != len(mat2):
