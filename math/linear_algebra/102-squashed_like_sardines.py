@@ -12,40 +12,44 @@ def cat_matrices(mat1, mat2, axis=0):
         This function returns a new matrix. If the two matrices cannot be
         concatenated, return None.
     """
-    if not mat1 or not mat2:
-        return None
-    if not isinstance(mat1, list) or not isinstance(mat2, list):
-        return None
-
-    # Recursively check the dimensions of the matrices
-    def is_list_of_lists(matrix):
-        return all(isinstance(elem, list) for elem in matrix)
-
-    def are_shapes_compatible(matrix1, matrix2, depth=0):
-        if depth == axis:
-            return is_list_of_lists(matrix1) == is_list_of_lists(matrix2)
-        if not is_list_of_lists(matrix1) or not is_list_of_lists(matrix2):
+    def is_valid_shape(m1, m2, axis):
+        """
+        Check if two matrices can be concatenated along the specified axis.
+        """
+        if len(m1) == 0 or len(m2) == 0:
             return False
-        if len(matrix1) != len(matrix2):
-            return False
-        return (all(are_shapes_compatible(matrix1[i], matrix2[i], depth+1)
-                    for i in range(len(matrix1))))
 
-    if not are_shapes_compatible(mat1, mat2):
+        # Get shapes of both matrices
+        shape1 = [len(m1)]
+        shape2 = [len(m2)]
+
+        # Traverse the first matrix to get its complete shape
+        tmp = m1
+        while isinstance(tmp[0], list):
+            shape1.append(len(tmp[0]))
+            tmp = tmp[0]
+
+        # Traverse the second matrix to get its complete shape
+        tmp = m2
+        while isinstance(tmp[0], list):
+            shape2.append(len(tmp[0]))
+            tmp = tmp[0]
+
+        # Remove the size along the concatenation axis
+        shape1.pop(axis)
+        shape2.pop(axis)
+
+        # Check if the remaining dimensions are equal
+        return shape1 == shape2
+
+    def concatenate(m1, m2, axis):
+        """ Concatenate two matrices along the specified axis """
+        if axis == 0:
+            return m1 + m2
+        else:
+            return [concatenate(x, y, axis - 1) for x, y in zip(m1, m2)]
+
+    if not is_valid_shape(mat1, mat2, axis):
         return None
 
-    if axis == 0:
-        return mat1 + mat2
-    elif axis == 1:
-        return [mat1[i] + mat2[i] for i in range(len(mat1))]
-    elif axis == 2:
-        if (any(len(row) != len(mat1[0]) for row in mat1)
-                or any(len(row) != len(mat1[0]) for row in mat2)):
-            return None
-        return [mat1[i] + mat2[i] for i in range(len(mat1))]
-    elif axis == 3:
-        if len(mat1) != len(mat2):
-            return None
-        return [[mat1[i][j] + mat2[i][j] for j in range(len(mat1[i]))]
-                for i in range(len(mat1))]
-    return None
+    return concatenate(mat1, mat2, axis)
