@@ -35,7 +35,7 @@ def add_matrices(mat1, mat2):
                 if len(mat1[i][j]) != len(mat2[i][j]):
                     return None
 
-                if not isinstance(mat1[i][j][0], list):  # 4D matrix
+                if isinstance(mat1[i][j][0], list):  # 4D matrix
                     new_col = []
                     for k in range(len(mat1[i][j])):
                         if len(mat1[i][j][k]) != len(mat2[i][j][k]):
