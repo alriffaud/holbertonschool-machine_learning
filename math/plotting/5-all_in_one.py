@@ -3,6 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def all_in_one():
     """
     This function plots all 5 previous graphs in one figure.
