@@ -19,14 +19,12 @@ def bars():
     peaches = fruit[3]
 
     r = np.arange(len(people))
-    plt.bar(r, apples, color='r', edgecolor='black', width=0.5, label='apples')
-    plt.bar(r, bananas, bottom=apples, color='y', edgecolor='black', width=0.5,
-            label='bananas')
+    plt.bar(r, apples, color='r', width=0.5, label='apples')
+    plt.bar(r, bananas, bottom=apples, color='y', width=0.5, label='bananas')
     plt.bar(r, oranges, bottom=np.array(apples) + np.array(bananas),
-            color='#ff8000', edgecolor='black', width=0.5, label='oranges')
+            color='#ff8000', width=0.5, label='oranges')
     plt.bar(r, peaches, bottom=np.array(apples) + np.array(bananas) +
-            np.array(oranges), color='#ffe5b4', edgecolor='black', width=0.5,
-            label='peaches')
+            np.array(oranges), color='#ffe5b4', width=0.5, label='peaches')
 
     plt.legend()
     plt.yticks(np.arange(0, 90, 10))
