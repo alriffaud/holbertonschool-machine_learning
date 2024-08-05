@@ -54,7 +54,8 @@ def all_in_one():
     # Plot 4:
     axs[1, 1].plot(x3, y31, 'r--', label='C-14')
     axs[1, 1].plot(x3, y32, 'g', label='Ra-226')
-    axs[1, 1].set_title('Exponential Decay of Radioactive Elements', fontsize='x-small')
+    axs[1, 1].set_title('Exponential Decay of Radioactive Elements',
+                        fontsize='x-small')
     axs[1, 1].set_xlabel('Time (years)', fontsize='x-small')
     axs[1, 1].set_ylabel('Fraction Remaining', fontsize='x-small')
     axs[1, 1].axis([0, 20000, 0, 1])
@@ -71,7 +72,7 @@ def all_in_one():
     axs_2.set_xlabel('Grades', fontsize='x-small')
     axs_2.set_ylabel('Number of Students', fontsize='x-small')
     axs_2.axis([0, 100, 0, 30])
-    axs_2.set_xticks(np.arange(0, 110, 10))    
+    axs_2.set_xticks(np.arange(0, 110, 10))
 
     # Adjust layout and display
     plt.suptitle('All in One')
