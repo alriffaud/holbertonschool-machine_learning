@@ -19,8 +19,9 @@ def bars():
     peaches = fruit[3]
 
     r = np.arange(len(people))
-    plt.bar(r, apples, color='r', width=0.5, label='apples')
-    plt.bar(r, bananas, bottom=apples, color='y', width=0.5, label='bananas')
+    plt.bar(r, apples, color='red', width=0.5, label='apples')
+    plt.bar(r, bananas, bottom=apples, color='yellow', width=0.5,
+            label='bananas')
     plt.bar(r, oranges, bottom=np.array(apples) + np.array(bananas),
             color='#ff8000', width=0.5, label='oranges')
     plt.bar(r, peaches, bottom=np.array(apples) + np.array(bananas) +
@@ -28,12 +29,7 @@ def bars():
 
     plt.legend()
     plt.yticks(np.arange(0, 90, 10))
-
-    # Adding labels
-    plt.ylabel('Quantity of Fruit')
-    plt.title('Number of Fruit per Person')
     plt.xticks(r, people)
-
-    # Display the plot
-    plt.tight_layout()
+    plt.ylabel('Quantity of Fruit')
+    plt.title("Number of Fruit per Person")
     plt.show()
