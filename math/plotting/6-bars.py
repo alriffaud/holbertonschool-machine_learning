@@ -30,7 +30,6 @@ def bars():
 
     plt.legend()
     plt.yticks(np.arange(0, 90, 10))
-    plt.axis([None, None, 0, 80])
 
     # Adding labels
     plt.ylabel('Quantity of Fruit')
