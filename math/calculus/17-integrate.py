@@ -10,6 +10,8 @@ def poly_integral(poly, C=0):
         return None
     n = len(poly)
     poly_int = [C]
+    if poly == [0]:
+        return poly_int
     for k in range(n):
         new_coef = poly[k] / (k + 1)
         if new_coef.is_integer():
