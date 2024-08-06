@@ -8,11 +8,11 @@ def poly_derivative(poly):
     """
     if not isinstance(poly, list) or len(poly) == 0:
         return None
-    if len(poly) == 1:
+    n = len(poly)
+    if n == 1:
         return [0]
     poly_deriv = []
-    n = len(poly) - 1
-    for k in range(n, 0, -1):
+    for k in range(1, n):
         new_coef = k * poly[k]
         poly_deriv.append(new_coef)
     return poly_deriv
