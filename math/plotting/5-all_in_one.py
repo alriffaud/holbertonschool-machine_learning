@@ -42,6 +42,8 @@ def all_in_one():
     axs[0, 1].set_title("Men's Height vs Weight", fontsize='x-small')
     axs[0, 1].set_xlabel('Height (in)', fontsize='x-small')
     axs[0, 1].set_ylabel('Weight (lbs)', fontsize='x-small')
+    axs[0, 1].set_yticks(np.arange(170, 191, 10))
+    axs[0, 1].set_xticks(np.arange(60, 81, 10))
 
     # Plot 3:
     axs[1, 0].plot(x2, y2)
@@ -50,6 +52,7 @@ def all_in_one():
     axs[1, 0].set_ylabel('Fraction Remaining', fontsize='x-small')
     axs[1, 0].axis([0, 28650, None, None])
     axs[1, 0].set_yscale('log')
+    axs[1, 0].set_xticks(np.arange(0, 20001, 10000))
 
     # Plot 4:
     axs[1, 1].plot(x3, y31, 'r--', label='C-14')
@@ -59,6 +62,8 @@ def all_in_one():
     axs[1, 1].set_xlabel('Time (years)', fontsize='x-small')
     axs[1, 1].set_ylabel('Fraction Remaining', fontsize='x-small')
     axs[1, 1].axis([0, 20000, 0, 1])
+    axs[1, 1].set_xticks(np.arange(0, 20001, 5000))
+    axs[1, 1].set_yticks(np.arange(0.0, 1.1, 0.5))
     axs[1, 1].legend()
 
     # Remove the existing subplots at (2, 0) and (2, 1)
@@ -73,6 +78,7 @@ def all_in_one():
     axs_2.set_ylabel('Number of Students', fontsize='x-small')
     axs_2.axis([0, 100, 0, 30])
     axs_2.set_xticks(np.arange(0, 110, 10))
+    axs_2.set_yticks(np.arange(0, 31, 10))
 
     # Adjust layout and display
     plt.suptitle('All in One')
