@@ -22,10 +22,10 @@ def bars():
     plt.bar(r, apples, color='red', width=0.5, label='apples')
     plt.bar(r, bananas, bottom=apples, color='yellow', width=0.5,
             label='bananas')
-    plt.bar(r, oranges, bottom=np.array(apples) + np.array(bananas),
-            color='#ff8000', width=0.5, label='oranges')
-    plt.bar(r, peaches, bottom=np.array(apples) + np.array(bananas) +
-            np.array(oranges), color='#ffe5b4', width=0.5, label='peaches')
+    plt.bar(r, oranges, bottom=apples + bananas, color='#ff8000', width=0.5,
+            label='oranges')
+    plt.bar(r, peaches, bottom=apples + bananas + oranges, color='#ffe5b4',
+            width=0.5, label='peaches')
 
     plt.legend()
     plt.yticks(np.arange(0, 90, 10))
