@@ -4,7 +4,8 @@ import numpy as np
 
 
 class Node:
-    """ This is the Node class. """
+    """ This class represents a node in the decision tree, which can be a
+    decision node or a leaf. """
     def __init__(self, feature=None, threshold=None, left_child=None,
                  right_child=None, is_root=False, depth=0):
         """ This is the __init__ method. """
@@ -18,7 +19,8 @@ class Node:
         self.depth = depth
 
     def max_depth_below(self):
-        """ This is the max_depth_below method. """
+        """ This method calculates the maximum depth from the current node
+        to the deepest leaves. """
         # If the node is a leaf
         if self.is_leaf:
             return self.depth
@@ -34,7 +36,8 @@ class Node:
 
 
 class Leaf(Node):
-    """ This is the Leaf class. """
+    """ This class inherits from Node and represents a leaf in the decision
+    tree. """
     def __init__(self, value, depth=None):
         """ This is the __init__ method. """
         super().__init__()
@@ -43,12 +46,13 @@ class Leaf(Node):
         self.depth = depth
 
     def max_depth_below(self):
-        """ This is the max_depth_below method. """
+        """ Overrides the method of the Node class. It simply returns the depth
+        of the leaf. """
         return self.depth
 
 
 class Decision_Tree():
-    """ This is the Decision_Tree class. """
+    """ This class is the main implementation of the decision tree. """
     def __init__(self, max_depth=10, min_pop=1, seed=0,
                  split_criterion="random", root=None):
         """ This is the __init__ method. """
@@ -65,5 +69,5 @@ class Decision_Tree():
         self.predict = None
 
     def depth(self):
-        """ This is the depth method. """
+        """ This method returns the maximum depth of the tree. """
         return self.root.max_depth_below()

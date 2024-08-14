@@ -4,7 +4,8 @@ import numpy as np
 
 
 class Node:
-    """ This is the Node class. """
+    """ This class represents a node in the decision tree, which can be a
+    decision node or a leaf. """
     def __init__(self, feature=None, threshold=None, left_child=None,
                  right_child=None, is_root=False, depth=0):
         """ This is the __init__ method. """
@@ -18,7 +19,8 @@ class Node:
         self.depth = depth
 
     def max_depth_below(self):
-        """ This is the max_depth_below method. """
+        """ This method calculates the maximum depth from the current node
+        to the deepest leaves. """
         # If the node is a leaf
         if self.is_leaf:
             return self.depth
@@ -33,7 +35,8 @@ class Node:
         return max(left_depth, right_depth)
 
     def count_nodes_below(self, only_leaves=False):
-        """ This is the max_depth_below method. """
+        """ This method returns the number of nodes or leaves in the subtree
+        from the current node. """
         if self.is_leaf:
             return 1
         if only_leaves:
@@ -58,7 +61,8 @@ class Node:
             return left_leaves + right_leaves + 1
 
     def left_child_add_prefix(self, text):
-        """ This is the left_child_add_prefix function. """
+        """ This method adds visual prefixes to show the tree hierarchy when
+        it is printed. """
         lines = text.split("\n")
         new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:]:
@@ -66,7 +70,8 @@ class Node:
         return (new_text)
 
     def right_child_add_prefix(self, text):
-        """ This is the right_child_add_prefix function. """
+        """ This method adds visual prefixes to show the tree hierarchy when
+        it is printed. """
         lines = text.split("\n")
         new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:]:
@@ -74,7 +79,8 @@ class Node:
         return (new_text)
 
     def __str__(self):
-        """ This is the __str__ method. """
+        """ This method returns a string representation of the node and its
+        subtree for easy viewing. """
         result = f"{'root' if self.is_root else '-> node'} \
 [feature={self.feature}, threshold={self.threshold}]\n"
         if self.left_child:
@@ -86,7 +92,8 @@ class Node:
         return result
 
     def get_leaves_below(self):
-        """ This is the get_leaves_below method. """
+        """ This method returns a list with all the leaves under the current
+        node. """
         result = []
         if self.left_child:
             result += self.left_child.get_leaves_below()
@@ -95,7 +102,8 @@ class Node:
         return result
 
     def update_bounds_below(self):
-        """ This is the update_bounds_below method. """
+        """ This method updates the upper and lower bounds for each node in
+        the subtree starting from the current node. """
         if self.is_root:
             self.upper = {0: np.inf}
             self.lower = {0: -1*np.inf}
@@ -142,7 +150,8 @@ class Node:
 
 
 class Leaf(Node):
-    """ This is the Leaf class. """
+    """ This class inherits from Node and represents a leaf in the decision
+    tree. """
     def __init__(self, value, depth=None):
         """ This is the __init__ method. """
         super().__init__()
@@ -151,28 +160,32 @@ class Leaf(Node):
         self.depth = depth
 
     def max_depth_below(self):
-        """ This is the max_depth_below method. """
+        """ Overrides the method of the Node class. It simply returns the depth
+        of the leaf. """
         return self.depth
 
     def count_nodes_below(self, only_leaves=False):
-        """ This is the count_nodes_below method. """
+        """ This method overrides the method of the Node class. Returns 1
+        because the leaf is itself a node. """
         return 1
 
     def __str__(self):
-        """ This is the __str__ method. """
+        """ This method overrides the __str__ method of the Node class,
+        returning a string representation of the sheet. """
         return (f"-> leaf [value={self.value}]")
 
     def get_leaves_below(self):
-        """ This is the get_leaves_below method. """
+        """ This method returns the leaf itself in a list. """
         return [self]
 
     def update_bounds_below(self):
-        """ This is the update_bounds_below method. """
+        """ This method overrides the update_bounds_below method and does
+        nothing because a leaf has no children. """
         pass
 
 
 class Decision_Tree():
-    """ This is the Decision_Tree class. """
+    """ This class is the main implementation of the decision tree. """
     def __init__(self, max_depth=10, min_pop=1, seed=0,
                  split_criterion="random", root=None):
         """ This is the __init__ method. """
@@ -189,21 +202,22 @@ class Decision_Tree():
         self.predict = None
 
     def depth(self):
-        """ This is the depth method. """
+        """ This method returns the maximum depth of the tree. """
         return self.root.max_depth_below()
 
     def count_nodes(self, only_leaves=False):
-        """ This is the count_nodes method. """
+        """ This method returns the number of nodes in the tree. If only_leaves
+        is True, count only leaves. """
         return self.root.count_nodes_below(only_leaves=only_leaves)
 
     def __str__(self):
-        """ This is the __str__ method. """
+        """ This method returns a string representation of the entire tree. """
         return self.root.__str__()
 
     def get_leaves(self):
-        """ This is the get_leaves method. """
+        """ This method returns a list with all the leaves in the tree. """
         return self.root.get_leaves_below()
 
     def update_bounds(self):
-        """ This is the update_bounds method. """
+        """ This method updates the boundaries of each node in the tree. """
         self.root.update_bounds_below()
