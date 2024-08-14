@@ -355,6 +355,7 @@ class Decision_Tree():
     def Gini_split_criterion_one_feature(self, node, feature):
         """ This method calculates the best split of a node for a specific
         feature, based on the Gini impurity. """
+        # list of possible thresholds to split data based on feature
         thresholds = self.possible_thresholds(node, feature)
         # Getting array of indexes for individuals in node's sub_population
         indices = np.arange(0, self.explanatory.shape[0])[node.sub_population]
