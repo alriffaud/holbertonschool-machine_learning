@@ -232,49 +232,53 @@ class Decision_Tree():
         """ This is the pred method. """
         return self.root.pred(x)
 
-    def fit(self,explanatory, target,verbose=0) :
+    def fit(self, explanatory, target, verbose=0):
         """ This method trains the decision tree with the given data."""
-        if self.split_criterion == "random" : 
-                self.split_criterion = self.random_split_criterion
-        else : 
-                self.split_criterion = self.Gini_split_criterion
+        if self.split_criterion == "random":
+            self.split_criterion = self.random_split_criterion
+        else:
+            self.split_criterion = self.Gini_split_criterion
         self.explanatory = explanatory
-        self.target      = target
-        self.root.sub_population = np.ones_like(self.target,dtype='bool')
+        self.target = target
+        self.root.sub_population = np.ones_like(self.target, dtype='bool')
 
         self.fit_node(self.root)
 
         self.update_predict()
 
-        if verbose==1 :
-                print(f"""  Training finished.
+        if verbose == 1:
+            print(f"""  Training finished.
     - Depth                     : { self.depth()       }
     - Number of nodes           : { self.count_nodes() }
     - Number of leaves          : { self.count_nodes(only_leaves=True) }
     - Accuracy on training data : { self.accuracy(self.explanatory,
                                     self.target)    }""")
 
-    def np_extrema(self,arr):
+    def np_extrema(self, arr):
         """ This method returns the minimum and maximum value of an array. """
         return np.min(arr), np.max(arr)
 
-    def random_split_criterion(self,node):
-        """ This method is responsible for generating a random division criterion. """
-        diff=0
-        while diff==0 :
-            feature=self.rng.integers(0,self.explanatory.shape[1])
-            feature_min,feature_max=self.np_extrema(self.explanatory[:,feature][node.sub_population])
-            diff=feature_max-feature_min
-        x=self.rng.uniform()
-        threshold= (1-x)*feature_min + x*feature_max
-        return feature,threshold
+    def random_split_criterion(self, node):
+        """ This method is responsible for generating a random division
+        criterion. """
+        diff = 0
+        while diff == 0:
+            feature = self.rng.integers(0, self.explanatory.shape[1])
+            feature_min, feature_max = self.np_extrema(
+                self.explanatory[:, feature][node.sub_population])
+            diff = feature_max-feature_min
+        x = self.rng.uniform()
+        threshold = (1-x)*feature_min + x*feature_max
+        return feature, threshold
 
-    def fit_node(self,node):
+    def fit_node(self, node):
         """ This method builds the decision tree recursively. """
         node.feature, node.threshold = self.split_criterion(node)
 
-        left_population  = node.sub_population & (self.explanatory[:, node.feature] > node.threshold)
-        right_population = node.sub_population & (self.explanatory[:, node.feature] <= node.threshold)
+        left_population = node.sub_population & (
+            self.explanatory[:, node.feature] > node.threshold)
+        right_population = node.sub_population & (
+            self.explanatory[:, node.feature] <= node.threshold)
 
         left_filter = self.explanatory[:, node.feature][left_population]
 
@@ -283,42 +287,45 @@ class Decision_Tree():
                         or (node.depth + 1 == self.max_depth)
                         or (np.unique(self.target[left_population]).size == 1))
 
-        if is_left_leaf :
-                node.left_child = self.get_leaf_child(node,left_population)                                                         
-        else :
-                node.left_child = self.get_node_child(node,left_population)
-                self.fit_node(node.left_child)
+        if is_left_leaf:
+            node.left_child = self.get_leaf_child(node, left_population)
+        else:
+            node.left_child = self.get_node_child(node, left_population)
+            self.fit_node(node.left_child)
 
         # Is right node a leaf ?
         right_filter = self.explanatory[:, node.feature][right_population]
         is_right_leaf = ((right_filter.size < self.min_pop)
                          or (node.depth + 1 == self.max_depth)
-                         or (np.unique(self.target[right_population]).size == 1))
+                         or (np.unique(
+                             self.target[right_population]).size == 1))
 
-        if is_right_leaf :
-                node.right_child = self.get_leaf_child(node,right_population)
-        else :
-                node.right_child = self.get_node_child(node,right_population)
-                self.fit_node(node.right_child)    
+        if is_right_leaf:
+            node.right_child = self.get_leaf_child(node, right_population)
+        else:
+            node.right_child = self.get_node_child(node, right_population)
+            self.fit_node(node.right_child)
 
     def get_leaf_child(self, node, sub_population):
-        """ This method creates a leaf node. """        
-        value = np.bincount(self.target[sub_population]).argmax()  # Find the most frequent class in the subpopulation.
-        leaf_child= Leaf(value)
-        leaf_child.depth=node.depth+1
-        leaf_child.subpopulation=sub_population
+        """ This method creates a leaf node. """
+        # Find the most frequent class in the subpopulation.
+        value = np.bincount(self.target[sub_population]).argmax()
+        leaf_child = Leaf(value)
+        leaf_child.depth = node.depth+1
+        leaf_child.subpopulation = sub_population
         return leaf_child
 
     def get_node_child(self, node, sub_population):
-        """ This method creates a non-terminal (internal) node. """        
-        n= Node()
-        n.depth=node.depth+1
-        n.sub_population=sub_population
+        """ This method creates a non-terminal (internal) node. """
+        n = Node()
+        n.depth = node.depth+1
+        n.sub_population = sub_population
         return n
 
-    def accuracy(self, test_explanatory , test_target):
-        """ 
+    def accuracy(self, test_explanatory, test_target):
+        """
         This method calculates the accuracy of the model. It Compares the
         predictions with the target and calculate the proportion of successes.
         """
-        return np.sum(np.equal(self.predict(test_explanatory), test_target))/test_target.size
+        return np.sum(np.equal(
+            self.predict(test_explanatory), test_target)) / test_target.size
