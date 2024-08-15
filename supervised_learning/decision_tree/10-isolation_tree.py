@@ -68,7 +68,7 @@ class Isolation_Random_Tree():
 
     def get_leaf_child(self, node, sub_population):
         """ This method creates a leaf node. """
-        leaf_child = Leaf(node.depth)
+        leaf_child = Leaf(node.depth + 1)
         leaf_child.depth = node.depth + 1
         leaf_child.subpopulation = sub_population
         return leaf_child
