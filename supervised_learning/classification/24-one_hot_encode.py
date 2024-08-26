@@ -9,11 +9,10 @@ def one_hot_encode(Y, classes):
     Y (numpy.ndarray): is a numeric label vector with shape (m,).
     classes (int): is the maximum number of classes found in Y.
     """
-    if not isinstance(classes, int) or classes < 1:
+    if not isinstance(Y, np.ndarray) or len(Y) == 0:
         return None
-    one_hot_matrix = np.zeros((classes, len(Y)))
-    for i in range(len(Y)):
-        if i >= classes or Y[i] >= len(Y):
-            return None
-        one_hot_matrix[i][Y[i]] = 1
-    return one_hot_matrix.T
+    if not isinstance(classes, int) or classes <= np.amax(Y):
+        return None
+    one_hot = np.zeros((classes, len(Y)))
+    one_hot[Y, np.arange(len(Y))] = 1
+    return one_hot
