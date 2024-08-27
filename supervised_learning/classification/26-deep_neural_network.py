@@ -157,6 +157,7 @@ class DeepNeuralNetwork:
             plt.show()
         return self.evaluate(X, Y)
 
+    @staticmethod
     def save(self, filename):
         """
         This method saves the instance object to a file in pickle format.
@@ -168,7 +169,6 @@ class DeepNeuralNetwork:
         with open(filename, 'wb') as file:
             pickle.dump(self, file)
 
-    @staticmethod
     def load(filename):
         """
         This method loads a pickled DeepNeuralNetwork object.
