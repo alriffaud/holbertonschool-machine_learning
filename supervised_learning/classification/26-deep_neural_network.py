@@ -174,8 +174,8 @@ class DeepNeuralNetwork:
         filename (str): is the file from which the object should be loaded.
         """
         import pickle
-        try:
-            with open(filename, 'rb') as file:
-                return pickle.load(file)
-        except FileNotFoundError:
+        import os
+        if not os.path.exists(filename):
             return None
+        with open(filename, 'rb') as file:
+            return pickle.load(file)
