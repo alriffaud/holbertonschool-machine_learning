@@ -24,17 +24,16 @@ class DeepNeuralNetwork:
         self.__L = len(layers)
         self.__cache = {}
         self.__weights = {}
-        for i in range(self.L):
-
-            if type(layers[i]) is not int or layers[i] < 1:
-                raise ValueError("layers must be a list of positive integers")
-
-            inodes = nx if i == 0 else layers[i - 1]
-
-            self.__weights["W" + str(i + 1)] = np.random.randn(
-                    layers[i], inodes) * np.sqrt(2 / inodes)
-
-            self.__weights["b" + str(i + 1)] = np.zeros((layers[i], 1))
+        for i in range(self.__L):
+            if not (isinstance(layers[i], int) and layers[i] > 0):
+                raise TypeError("layers must be a list of positive integers")
+            if i == 0:
+                self.__weights['W1'] = (np.random.randn(layers[i], nx)
+                                        * np.sqrt(2. / nx))
+            else:
+                self.__weights['W' + str(i + 1)] = (np.random.randn(
+                    layers[i], layers[i - 1]) * np.sqrt(2. / layers[i - 1]))
+            self.__weights['b' + str(i + 1)] = np.zeros((layers[i], 1))
 
     @property
     def L(self):
@@ -57,26 +56,33 @@ class DeepNeuralNetwork:
         """
         return self.__weights
 
+    @staticmethod
+    def __smax(z):
+        """ Performs the softmax calculation
+            - z: numpy.ndarray with shape (nx, m) that contains the input data
+        """
+        a = np.exp(z - np.max(z))
+        return a / a.sum(axis=0)
+
     def forward_prop(self, X):
         """
         This method calculates the forward propagation of the neural network.
         X (np.ndarray): is the input data (number X, number examples).
         """
         self.__cache["A0"] = X
-        A = X
         for i in range(1, self.__L + 1):
-            prev_A = self.__cache[f"A{i - 1}"]
-            Z = np.matmul(self.__weights[f"W{i}"], prev_A)\
-                + self.__weights[f"b{i}"]
+            ws = self.__weights["W" + str(i)]
+            bs = self.__weights["b" + str(i)]
+            A = self.__cache["A" + str(i - 1)]
+            Z = ws @ A + bs
+
             if i < self.__L:
-                # Sigmoid
-                activation = 1 / (1 + np.exp(-Z))
+                A = 1 / (1 + np.exp(-Z))
             else:
-                # Softmax
-                exp_Z = np.exp(Z - np.max(Z, axis=0, keepdims=True))
-                activation = exp_Z / np.sum(exp_Z, axis=0, keepdims=True)
-            self.__cache[f"A{i}"] = activation
-        return self.__cache[f"A{self.__L}"], self.__cache
+                A = self.__smax(Z)
+
+            self.__cache["A" + str(i)] = A
+        return A, self.__cache
 
     def cost(self, Y, A):
         """
@@ -94,10 +100,9 @@ class DeepNeuralNetwork:
         X (np.ndarray): is the input data (number X, number examples).
         Y (np.ndarray): is the correct labels for the input data.
         """
-        A, _ = self.forward_prop(X)
-        predictions = np.eye(A.shape[0])[np.argmax(A, axis=0)].T
-        cost = self.cost(Y, A)
-        return predictions, cost
+        m = X.shape[1]
+        A = self.forward_prop(X)[0]
+        return np.where(A == np.max(A, axis=0), 1, 0), self.cost(Y, A)
 
     def gradient_descent(self, Y, cache, alpha=0.05):
         """
