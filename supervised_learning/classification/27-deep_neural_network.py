@@ -111,17 +111,18 @@ class DeepNeuralNetwork:
         descent on the neural network.
         """
         m = Y.shape[1]
-        dz = self.__cache["A" + str(self.__L)] - Y
-
+        dZ = cache['A' + str(self.__L)] - Y
         for i in range(self.__L, 0, -1):
-            dw = (1/m) * (dz @ self.__cache["A" + str(i - 1)].T)
-            db = (1/m) * np.sum(dz, axis=1, keepdims=True)
-            dz = (self.__weights["W" + str(i)].T @ dz) * (
-                    self.__cache["A" + str(i - 1)] * (
-                        1 - self.__cache["A" + str(i - 1)]))
-
-            self.__weights["W" + str(i)] -= alpha * dw
-            self.__weights["b" + str(i)] -= alpha * db
+            A = cache['A' + str(i - 1)]
+            dW = np.matmul(dZ, A.T) / m
+            db = np.sum(dZ, axis=1, keepdims=True) / m
+            W = self.__weights['W' + str(i)]
+            dZ = np.matmul(W.T, dZ) * A * (1 - A)
+            self.__weights['W' + str(i)] = self.__weights['W' + str(i)] - (
+                alpha * dW)
+            self.__weights['b' + str(i)] = self.__weights['b' + str(i)] - (
+                alpha * db)
+        return self.__weights
 
     def train(self, X, Y, iterations=5000, alpha=0.05, verbose=True,
               graph=True, step=100):
@@ -146,29 +147,10 @@ class DeepNeuralNetwork:
             raise TypeError("alpha must be a float")
         if alpha <= 0:
             raise ValueError("alpha must be positive")
-        if verbose or graph:
-            if not isinstance(step, int):
-                raise TypeError("step must be an integer")
-            if step <= 0 or step > iterations:
-                raise ValueError("step must be positive and <= iterations")
-        costs = []
-        iters = []
-        for i in range(iterations + 1):
-            A, cache = self.forward_prop(X)
-            self.gradient_descent(Y, cache, alpha)
-            cost = self.cost(Y, A)
-            if i % step == 0:
-                costs.append(cost)
-                iters.append(i)
-                if verbose:
-                    print("Cost after {} iterations: {}".format(i, cost))
-        if graph:
-            import matplotlib.pyplot as plt
-            plt.plot(iters, costs, 'b')
-            plt.xlabel("iteration")
-            plt.ylabel("cost")
-            plt.title("Training Cost")
-            plt.show()
+        for i in range(iterations):
+            self.forward_prop(X)
+            self.gradient_descent(Y, self.__cache, alpha)
+
         return self.evaluate(X, Y)
 
     def save(self, filename):
