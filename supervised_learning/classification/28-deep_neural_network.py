@@ -30,15 +30,14 @@ class DeepNeuralNetwork:
         self.__weights = {}
         self.__activation = activation
         for i in range(self.__L):
-            if not (isinstance(layers[i], int) and layers[i] > 0):
-                raise TypeError("layers must be a list of positive integers")
             if i == 0:
-                self.__weights['W1'] = (np.random.randn(layers[i], nx)
-                                        * np.sqrt(2. / nx))
+                prev_layer = nx
             else:
-                self.__weights['W' + str(i + 1)] = (np.random.randn(
-                    layers[i], layers[i - 1]) * np.sqrt(2. / layers[i - 1]))
-            self.__weights['b' + str(i + 1)] = np.zeros((layers[i], 1))
+                prev_layer = layers[i - 1]
+            self.__weights[f"W{i + 1}"] = \
+                np.random.randn(layers[i], prev_layer) * \
+                np.sqrt(2 / prev_layer)
+            self.__weights[f"b{i + 1}"] = np.zeros((layers[i], 1))
 
     @property
     def L(self):
