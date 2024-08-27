@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """ This module defines the DeepNeuralNetwork class. """
 import numpy as np
+import pickle
 
 
 class DeepNeuralNetwork:
@@ -157,24 +158,22 @@ class DeepNeuralNetwork:
             plt.show()
         return self.evaluate(X, Y)
 
-    @staticmethod
     def save(self, filename):
-        """
+        """ 
         This method saves the instance object to a file in pickle format.
         filename (str): is the file to which the object should be saved.
         """
-        if not filename.endswith('.pkl'):
-            filename += '.pkl'
-        import pickle
-        with open(filename, 'wb') as file:
-            pickle.dump(self, file)
+        if not filename.endswith(".pkl"):
+            filename = filename + ".pkl"
+
+        with open(filename, 'wb') as f:
+            pickle.dump(self, f)
 
     def load(filename):
         """
         This method loads a pickled DeepNeuralNetwork object.
         filename (str): is the file from which the object should be loaded.
         """
-        import pickle
         try:
             with open(filename, 'rb') as file:
                 return pickle.load(file)
