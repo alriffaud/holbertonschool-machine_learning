@@ -123,9 +123,9 @@ class DeepNeuralNetwork:
         descent on the neural network.
         """
         m = Y.shape[1]
-        dZ = cache[f"A{self.__L}"] - Y
+        dZ = cache['A' + str(self.__L)] - Y
         for i in range(self.__L, 0, -1):
-            prev_A = cache[f"A{i - 1}"]
+            prev_A = cache["A" + str(i - 1)]
             dW = (1 / m) * np.matmul(dZ, prev_A.T)
             db = (1 / m) * np.sum(dZ, axis=1, keepdims=True)
             if self.__activation == 'sig':
@@ -134,8 +134,9 @@ class DeepNeuralNetwork:
             else:
                 dZ = np.matmul(self.__weights[f"W{i}"].T, dZ) * \
                     (1 - (prev_A ** 2))
-            self.__weights[f"W{i}"] -= alpha * dW
-            self.__weights[f"b{i}"] -= alpha * db
+            self.__weights['W' + str(i)] -= alpha * dW
+            self.__weights['b' + str(i)] -= alpha * db
+        return self.__weights
 
     def train(self, X, Y, iterations=5000, alpha=0.05, verbose=True,
               graph=True, step=100):
@@ -166,22 +167,22 @@ class DeepNeuralNetwork:
             if step <= 0 or step > iterations:
                 raise ValueError("step must be positive and <= iterations")
         costs = []
-        iters = []
+        count = []
         for i in range(iterations + 1):
             A, cache = self.forward_prop(X)
-            self.gradient_descent(Y, cache, alpha)
+            if i != iterations:
+                self.gradient_descent(Y, self.cache, alpha)
             cost = self.cost(Y, A)
-            if i % step == 0:
-                costs.append(cost)
-                iters.append(i)
-                if verbose:
-                    print("Cost after {} iterations: {}".format(i, cost))
+            costs.append(cost)
+            count.append(i)
+            if verbose and (i % step == 0 or i == 0 or i == iterations):
+                print("Cost after {} iterations: {}".format(i, cost))
         if graph:
             import matplotlib.pyplot as plt
-            plt.plot(iters, costs, 'b')
-            plt.xlabel("iteration")
-            plt.ylabel("cost")
-            plt.title("Training Cost")
+            plt.plot(count, costs, 'b-')
+            plt.xlabel('iteration')
+            plt.ylabel('cost')
+            plt.title('Training Cost')
             plt.show()
         return self.evaluate(X, Y)
 
