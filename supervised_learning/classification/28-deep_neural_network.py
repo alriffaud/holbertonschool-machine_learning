@@ -67,15 +67,6 @@ class DeepNeuralNetwork:
         """
         return self.__activation
 
-    @staticmethod
-    def __smax(z):
-        """
-        Performs the softmax calculation
-        z: numpy.ndarray with shape (nx, m) that contains the input data
-        """
-        a = np.exp(z - np.max(z, axis=0, keepdims=True))
-        return a / np.sum(a, axis=0, keepdims=True)
-
     def forward_prop(self, X):
         """
         This method calculates the forward propagation of the neural network.
@@ -83,19 +74,19 @@ class DeepNeuralNetwork:
         """
         self.__cache["A0"] = X
         for i in range(1, self.__L + 1):
-            ws = self.__weights["W" + str(i)]
-            bs = self.__weights["b" + str(i)]
-            A = self.__cache["A" + str(i - 1)]
-            Z = ws @ A + bs
+            prev_A = self.__cache[f"A{i - 1}"]
+            Z = np.matmul(self.__weights[f"W{i}"], prev_A) + \
+                self.__weights[f"b{i}"]
             if i < self.__L:
                 if self.__activation == 'sig':
                     A = 1 / (1 + np.exp(-Z))
                 else:
                     A = np.tanh(Z)
             else:
-                A = self.__smax(Z)
-            self.__cache["A" + str(i)] = A
-        return A, self.__cache
+                exp_Z = np.exp(Z - np.max(Z, axis=0, keepdims=True))
+                A = exp_Z / np.sum(exp_Z, axis=0, keepdims=True)
+            self.__cache[f"A{i}"] = A
+        return self.__cache[f"A{self.__L}"], self.__cache
 
     def cost(self, Y, A):
         """
