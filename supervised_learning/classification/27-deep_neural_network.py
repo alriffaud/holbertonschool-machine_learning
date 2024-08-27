@@ -58,8 +58,9 @@ class DeepNeuralNetwork:
 
     @staticmethod
     def __smax(z):
-        """ Performs the softmax calculation
-            - z: numpy.ndarray with shape (nx, m) that contains the input data
+        """ 
+        Performs the softmax calculation
+        z: numpy.ndarray with shape (nx, m) that contains the input data
         """
         a = np.exp(z - np.max(z))
         return a / a.sum(axis=0)
@@ -110,18 +111,17 @@ class DeepNeuralNetwork:
         descent on the neural network.
         """
         m = Y.shape[1]
-        dZ = cache['A' + str(self.__L)] - Y
+        dz = self.__cache["A" + str(self.__L)] - Y
+
         for i in range(self.__L, 0, -1):
-            A = cache['A' + str(i - 1)]
-            dW = np.matmul(dZ, A.T) / m
-            db = np.sum(dZ, axis=1, keepdims=True) / m
-            W = self.__weights['W' + str(i)]
-            dZ = np.matmul(W.T, dZ) * A * (1 - A)
-            self.__weights['W' + str(i)] = self.__weights['W' + str(i)] - (
-                alpha * dW)
-            self.__weights['b' + str(i)] = self.__weights['b' + str(i)] - (
-                alpha * db)
-        return self.__weights
+            dw = (1/m) * (dz @ self.__cache["A" + str(i - 1)].T)
+            db = (1/m) * np.sum(dz, axis=1, keepdims=True)
+            dz = (self.__weights["W" + str(i)].T @ dz) * (
+                    self.__cache["A" + str(i - 1)] * (
+                        1 - self.__cache["A" + str(i - 1)]))
+
+            self.__weights["W" + str(i)] -= alpha * dw
+            self.__weights["b" + str(i)] -= alpha * db
 
     def train(self, X, Y, iterations=5000, alpha=0.05, verbose=True,
               graph=True, step=100):
