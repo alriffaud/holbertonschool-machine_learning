@@ -58,7 +58,7 @@ class DeepNeuralNetwork:
 
     @staticmethod
     def __smax(z):
-        """ 
+        """
         Performs the softmax calculation
         z: numpy.ndarray with shape (nx, m) that contains the input data
         """
