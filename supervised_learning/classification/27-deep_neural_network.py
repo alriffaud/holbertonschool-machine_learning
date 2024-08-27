@@ -56,33 +56,26 @@ class DeepNeuralNetwork:
         """
         return self.__weights
 
-    @staticmethod
-    def __smax(z):
-        """
-        Performs the softmax calculation
-        z (np.ndarray): numpy.ndarray with shape (nx, m)
-        that contains the input data
-        """
-        a = np.exp(z - np.max(z))
-        return a / a.sum(axis=0)
-
     def forward_prop(self, X):
         """
         This method calculates the forward propagation of the neural network.
         X (np.ndarray): is the input data (number X, number examples).
         """
-        self.__cache['A0'] = X
+        self.__cache["A0"] = X
+        A = X
         for i in range(1, self.__L + 1):
-            ws = self.__weights["W" + str(i)]
-            bs = self.__weights["b" + str(i)]
-            A = self.__cache["A" + str(i - 1)]
-            Z = ws @ A + bs
+            prev_A = self.__cache[f"A{i - 1}"]
+            Z = np.matmul(self.__weights[f"W{i}"], prev_A)\
+                + self.__weights[f"b{i}"]
             if i < self.__L:
-                A = 1 / (1 + np.exp(-Z))
+                # Sigmoid
+                activation = 1 / (1 + np.exp(-Z))
             else:
-                A = self.__smax(Z)
-            self.__cache["A" + str(i)] = A
-        return A, self.__cache
+                # Softmax
+                exp_Z = np.exp(Z - np.max(Z, axis=0, keepdims=True))
+                activation = exp_Z / np.sum(exp_Z, axis=0, keepdims=True)
+            self.__cache[f"A{i}"] = activation
+        return self.__cache[f"A{self.__L}"], self.__cache
 
     def cost(self, Y, A):
         """
@@ -91,7 +84,7 @@ class DeepNeuralNetwork:
         A (np.ndarray): is the predicted labels.
         """
         m = Y.shape[1]
-        cost = -np.sum((Y * np.log(A)))
+        cost = -np.sum(Y * np.log(A))
         return cost / m
 
     def evaluate(self, X, Y):
@@ -100,9 +93,10 @@ class DeepNeuralNetwork:
         X (np.ndarray): is the input data (number X, number examples).
         Y (np.ndarray): is the correct labels for the input data.
         """
-        m = X.shape[1]
-        A = self.forward_prop(X)[0]
-        return np.where(A == np.max(A, axis=0), 1, 0), self.cost(Y, A)
+        A, _ = self.forward_prop(X)
+        predictions = np.eye(A.shape[0])[np.argmax(A, axis=0)].T
+        cost = self.cost(Y, A)
+        return predictions, cost
 
     def gradient_descent(self, Y, cache, alpha=0.05):
         """
