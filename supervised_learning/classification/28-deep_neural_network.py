@@ -67,6 +67,15 @@ class DeepNeuralNetwork:
         """
         return self.__activation
 
+    @staticmethod
+    def __smax(z):
+        """
+        Performs the softmax calculation
+        z: numpy.ndarray with shape (nx, m) that contains the input data
+        """
+        a = np.exp(z - np.max(z, axis=0, keepdims=True))
+        return a / np.sum(a, axis=0, keepdims=True)
+
     def forward_prop(self, X):
         """
         This method calculates the forward propagation of the neural network.
@@ -74,19 +83,19 @@ class DeepNeuralNetwork:
         """
         self.__cache["A0"] = X
         for i in range(1, self.__L + 1):
-            prev_A = self.__cache[f"A{i - 1}"]
-            Z = np.matmul(self.__weights[f"W{i}"], prev_A) + \
-                self.__weights[f"b{i}"]
+            ws = self.__weights["W" + str(i)]
+            bs = self.__weights["b" + str(i)]
+            A = self.__cache["A" + str(i - 1)]
+            Z = ws @ A + bs
             if i < self.__L:
                 if self.__activation == 'sig':
                     A = 1 / (1 + np.exp(-Z))
                 else:
                     A = np.tanh(Z)
             else:
-                exp_Z = np.exp(Z - np.max(Z, axis=0, keepdims=True))
-                A = exp_Z / np.sum(exp_Z, axis=0, keepdims=True)
-            self.__cache[f"A{i}"] = A
-        return self.__cache[f"A{self.__L}"], self.__cache
+                A = self.__smax(Z)
+            self.__cache["A" + str(i)] = A
+        return A, self.__cache
 
     def cost(self, Y, A):
         """
@@ -104,9 +113,10 @@ class DeepNeuralNetwork:
         X (np.ndarray): is the input data (number X, number examples).
         Y (np.ndarray): is the correct labels for the input data.
         """
-        m = X.shape[1]
-        A = self.forward_prop(X)[0]
-        return np.where(A == np.max(A, axis=0), 1, 0), self.cost(Y, A)
+        output, cache = self.forward_prop(X)
+        prediction = np.eye(output.shape[0])[np.argmax(output, axis=0)].T
+        cost = self.cost(Y, output)
+        return prediction, cost
 
     def gradient_descent(self, Y, cache, alpha=0.05):
         """
