@@ -10,8 +10,6 @@ def calculate_accuracy(y, y_pred):
         y (tensor): is a placeholder for the labels of the input data.
         y_pred (tensor): is a tensor containing the network’s predictions.
     """
-    if tf.size(y) == 0:
-        return 0.0
-    correct_predictions = tf.equal(y, y_pred)
-    accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
+    correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_pred, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     return accuracy
