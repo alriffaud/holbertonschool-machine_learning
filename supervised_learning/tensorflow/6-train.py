@@ -44,23 +44,19 @@ def train(X_train, Y_train, X_valid, Y_valid, layer_sizes, activations, alpha,
     saver = tf.train.Saver()
     with tf.Session() as sess:
         sess.run(init)  # Initialize all variables
-        feed_dict_train = {x: X_train, y: Y_train}
-        feed_dict_valid = {x: X_valid, y: Y_valid}
         for i in range(iterations + 1):
-            # Run the training operation
-            sess.run(train_op, feed_dict=feed_dict_train)
-            # Every 100 iterations, print the training and validation results
+            train_loss, train_accuracy = sess.run(
+                [loss, accuracy], feed_dict={x: X_train, y: Y_train})
+            valid_loss, valid_accuracy = sess.run(
+                [loss, accuracy], feed_dict={x: X_valid, y: Y_valid})
+            # Print metrics after every 100 iterations, the 0th & the last
             if i % 100 == 0 or i == iterations:
-                train_cost, train_accuracy = sess.run(
-                    [loss, accuracy], feed_dict=feed_dict_train)
-                valid_cost, valid_accuracy = sess.run(
-                    [loss, accuracy], feed_dict=feed_dict_valid)
                 print(f"After {i} iterations:")
-                print(f"\tTraining Cost: {train_cost}")
+                print(f"\tTraining Cost: {train_loss}")
                 print(f"\tTraining Accuracy: {train_accuracy}")
-                print(f"\tValidation Cost: {valid_cost}")
+                print(f"\tValidation Cost: {valid_loss}")
                 print(f"\tValidation Accuracy: {valid_accuracy}")
             if i < iterations:
-                sess.run(train_op, feed_dict=feed_dict_train)
+                sess.run(train_op, feed_dict={x: X_train, y: Y_train})
         # Save the trained model
         return saver.save(sess, save_path)
