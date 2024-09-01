@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """ This module defines the build_model function. """
-import tensorflow as tf
-import keras as K
+import tensorflow.keras as K
 
 
 def build_model(nx, layers, activations, lambtha, keep_prob):
