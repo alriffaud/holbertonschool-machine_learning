@@ -23,8 +23,9 @@ def build_model(nx, layers, activations, lambtha, keep_prob):
     # A dense layer is defined that connects to the input
     outputs = K.layers.Dense(layers[0], activation=activations[0],
                              kernel_regularizer=l2)(inputs)
-    # Dropout is added to the first layer
-    outputs = K.layers.Dropout(1 - keep_prob)(outputs)
+    # Dropout is added to the first layer only if len(layers) > 1
+    if len(layers) > 1:
+        outputs = K.layers.Dropout(1 - keep_prob)(outputs)
     # Layers are added to the model
     for i in range(1, len(layers)):
         # A dense layer with L2 regularization is added
