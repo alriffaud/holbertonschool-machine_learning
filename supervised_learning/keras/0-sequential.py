@@ -16,21 +16,21 @@ def build_model(nx, layers, activations, lambtha, keep_prob):
         keep_prob (float): is the probability that a node will be kept for
         dropout.
     """
-    # Initializes the Keras sequential model
+    # The Keras sequential model is initialized
     model = K.Sequential()
-    # Set up L2 regularization
+    # L2 regularization is set up
     l2 = K.regularizers.l2(lambtha)
-    # Add the layers to the model
+    # Layers are added to the model
     for i in range(len(layers)):
-        # If it is the first layer, it specifies the input shape
+        # If it is the first layer, the input shape is specified
         if i == 0:
             model.add(K.layers.Dense(layers[i], activation=activations[i],
                                      kernel_regularizer=l2, input_shape=(nx,)))
         else:
-            # Add a dense layer with L2 regularization
+            # A dense layer with L2 regularization is added
             model.add(K.layers.Dense(layers[i], activation=activations[i],
                                      kernel_regularizer=l2))
-        # Add a dropout layer if it is not the last layer
+        # A dropout layer is added if it is not the last layer
         if i < len(layers) - 1:
             model.add(K.layers.Dropout(1 - keep_prob))
     return model
