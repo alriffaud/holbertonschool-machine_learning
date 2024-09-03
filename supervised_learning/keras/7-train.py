@@ -34,10 +34,9 @@ def train_model(network, data, labels, batch_size, epochs,
         batches every epoch.
     Returns: the History object generated after training the model.
     """
+    callbacks = []
     if early_stopping:
-        callbacks = [K.callbacks.EarlyStopping(patience=patience)]
-    else:
-        callbacks = None
+        callbacks.append(K.callbacks.EarlyStopping(patience=patience))
     if learning_rate_decay:
         def scheduler(epoch):
             """
