@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """ This module defines the moving_average function. """
 import numpy as np
-shuffle_data = __import__('2-shuffle_data').shuffle_data
 
 
 def moving_average(data, beta):
