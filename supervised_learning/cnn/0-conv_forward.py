@@ -39,8 +39,8 @@ def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
     if padding == 'valid':
         Ph, Pw = 0, 0
     elif padding == 'same':
-        Ph = ((h_prev - 1) * Sh + kh - h_prev) // 2 + 1
-        Pw = ((w_prev - 1) * Sw + kw - w_prev) // 2 + 1
+        Ph = ((h_prev - 1) * Sh + kh - h_prev) // 2
+        Pw = ((w_prev - 1) * Sw + kw - w_prev) // 2
     else:
         Ph, Pw = padding
     padded_images = np.pad(A_prev, ((0, 0), (Ph, Ph), (Pw, Pw), (0, 0)),
