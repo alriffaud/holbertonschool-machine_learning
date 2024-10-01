@@ -20,7 +20,8 @@ def inception_block(A_prev, filters):
             F5R: number of filters in the 1x1 convolution before the 5x5
                 convolution.
             F5: number of filters in the 5x5 convolution.
-            FPP: number of filters in the 1x1 convolution after the max pooling.
+            FPP: number of filters in the 1x1 convolution after the max
+            pooling.
     Returns: the concatenated output of the inception block.
     """
     F1, F3R, F3, F5R, F5, FPP = filters
@@ -44,10 +45,14 @@ def inception_block(A_prev, filters):
                               activation='relu')(conv5x5)
 
     # Max pooling
-    max_pool = K.layers.MaxPooling2D(pool_size=3, strides=1, padding='same')(A_prev)
+    max_pool = K.layers.MaxPooling2D(pool_size=3,
+                                     strides=1,
+                                     padding='same')(A_prev)
     # 1x1 convolution after max pooling
-    max_pool = K.layers.Conv2D(filters=FPP, kernel_size=1, padding='same',
-                              activation='relu')(max_pool)
+    max_pool = K.layers.Conv2D(filters=FPP,
+                               kernel_size=1,
+                               padding='same',
+                               activation='relu')(max_pool)
 
     # Concatenate the outputs
     return K.layers.concatenate([conv1x1, conv3x3, conv5x5, max_pool])
