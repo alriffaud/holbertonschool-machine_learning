@@ -13,7 +13,7 @@ def identity_block(A_prev, filters):
     All weights use he normal initialization.
     The seed for the random initialization is set to 0.
     Args:
-        A_prev (Keras input): is the output from the previous layer.
+        A_prev (Keras input): is the output the previous layer.
         filters (list/tuple): is a tuple or list containing F11, F3, and F12,
             where F11 is the number of filters in the first 1x1 convolution,
             F3 is the number of filters in the 3x3 convolution, and F12 is the
