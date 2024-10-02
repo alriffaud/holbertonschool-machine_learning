@@ -13,8 +13,8 @@ def projection_block(A_prev, filters, s=2):
     All weights use he normal initialization.
     Args:
         A_prev (Keras input): the output of the previous layer.
-        filters (tuple/list): contains the number of filters in each convolution
-            of the block.
+        filters (tuple/list): contains the number of filters in each
+        convolution of the block.
             - F11: number of filters in the first 1x1 convolution.
             - F3: number of filters in the 3x3 convolution.
             - F12: number of filters in the second 1x1 convolution.
