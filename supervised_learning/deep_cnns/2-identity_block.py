@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ This module defines the identity_block function. """
 from tensorflow import keras as K
 
