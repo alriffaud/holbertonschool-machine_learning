@@ -13,7 +13,7 @@ def identity_block(A_prev, filters):
     All weights use he normal initialization.
     The seed for the random initialization is set to 0.
     Args:
-        A_prev (Keras input): is the output the previous layer.
+        A_prev (Keras input): is the output of the previous layer.
         filters (list/tuple): is a tuple or list containing F11, F3, and F12,
             where F11 is the number of filters in the first 1x1 convolution,
             F3 is the number of filters in the 3x3 convolution, and F12 is the
@@ -21,6 +21,9 @@ def identity_block(A_prev, filters):
     Returns: the activated output of the identity block.
     """
     F11, F3, F12 = filters
+
+    # Save the input value for the shortcut
+    shortcut = A_prev
 
     # 1x1 convolution
     conv1x1 = K.layers.Conv2D(filters=F11, kernel_size=1, padding='same',
@@ -48,6 +51,6 @@ def identity_block(A_prev, filters):
     batch_norm3 = K.layers.BatchNormalization(axis=3)(conv1x1_2)
 
     # Add the input to the output of the block
-    add = K.layers.Add()([batch_norm3, A_prev])
+    add = K.layers.Add()([batch_norm3, shortcut])
     # Activation
     return K.layers.Activation('relu')(add)
