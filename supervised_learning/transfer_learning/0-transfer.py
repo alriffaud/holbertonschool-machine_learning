@@ -96,7 +96,7 @@ if __name__ == "__main__":
                                              mode='max')
 
     # Train the model with data augmentation
-    history = model.fit(datagen.flow(x_train, y_train, batch_size=512),
+    history = model.fit(datagen.flow(x_train, y_train, batch_size=128),
                         epochs=50,
                         validation_data=(x_test, y_test),
                         callbacks=[early_stopping, checkpoint, lr_schedule],
@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
     # Unfreeze the base model and train specific layers
     base_model.trainable = True
-    for layer in base_model.layers[:-20]:  # Freeze all but the last 30 layers
+    for layer in base_model.layers[:-30]:  # Freeze all but the last 30 layers
         layer.trainable = False
     fine_tune_optimizer = K.optimizers.Adam(learning_rate=1e-5)
     model.compile(optimizer=fine_tune_optimizer,
@@ -116,7 +116,7 @@ if __name__ == "__main__":
 
     # Fine-tune model with all layers trainable
     finetuning_history = model.fit(datagen.flow(x_train, y_train,
-                                                batch_size=512),
+                                                batch_size=128),
                                    epochs=50,
                                    validation_data=(x_test, y_test),
                                    callbacks=[early_stopping, checkpoint],
