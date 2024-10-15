@@ -89,17 +89,15 @@ class Yolo:
             th = output[..., 3]
 
             # Widths and heights of anchors
-            anchor_w = self.anchors[i][:, 0]
-            anchor_h = self.anchors[i][:, 1]
-
+            anchor_w = self.anchors[i, :, 0]
+            anchor_h = self.anchors[i, :, 1]
             # grid cells coordinates for width and height
             cx, cy = np.meshgrid(np.arange(grid_width),
-                                 np.arange(grid_height),
-                                 indexing='ij')
+                                 np.arange(grid_height))
 
             # Add axis to match dimensions of t_x & t_y
-            cx = cx[..., np.newaxis]
-            cy = cy[..., np.newaxis]
+            cx = np.expand_dims(cx, axis=-1)
+            cy = np.expand_dims(cy, axis=-1)
 
             # Calculate bounding box coordinates
             bx = (self.sigmoid(tx) + cx) / grid_width
