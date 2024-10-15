@@ -104,6 +104,18 @@ class Yolo:
             x2 = cx + bw / 2
             y2 = cy + bh / 2
 
+            # Clip the coordinates to be within the image boundaries
+            x1 = np.clip(x1, 0, 1)
+            y1 = np.clip(y1, 0, 1)
+            x2 = np.clip(x2, 0, 1)
+            y2 = np.clip(y2, 0, 1)
+
+            # Convert to absolute coordinates based on image size
+            x1_abs = x1 * image_width
+            y1_abs = y1 * image_height
+            x2_abs = x2 * image_width
+            y2_abs = y2 * image_height
+
             # Concatenate the coordinates into a single array
             box = np.stack([x1, y1, x2, y2], axis=-1)
             boxes.append(box)
