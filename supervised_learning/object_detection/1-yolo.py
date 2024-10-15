@@ -36,6 +36,10 @@ class Yolo:
         self.nms_t = nms_t
         self.anchors = anchors
 
+    def sigmoid(self, x):
+        """A simple sigmoid method"""
+        return 1 / (1 + np.exp(-x))
+
     def process_outputs(self, outputs, image_size):
         """
         Process Darknet outputs.
@@ -67,13 +71,13 @@ class Yolo:
         image_height, image_width = image_size
 
         for i, output in enumerate(outputs):
-            grid_height, grid_width, anchor_boxes, _ = output.shape
+            grid_height, grid_width, _, _ = output.shape
 
             # Extracting secrets from boxes and class probabilities
             # Sigmoid for box confidence
-            box_confidence = 1 / (1 + np.exp(-output[..., 4:5]))
+            box_confidence = self.sigmoid(output[..., 4:5])
             # Sigmoid for box class probabilities
-            box_class_prob = 1 / (1 + np.exp(-output[..., 5:]))
+            box_class_prob = self.sigmoid(output[..., 5:])
 
             box_confidences.append(box_confidence)
             box_class_probs.append(box_class_prob)
@@ -88,33 +92,27 @@ class Yolo:
             anchor_w = self.anchors[i][:, 0]
             anchor_h = self.anchors[i][:, 1]
 
-            # Sigmoid for tx and ty
-            cy = (np.arange(grid_height).reshape(
-                grid_height, 1, 1) + ty) / grid_height
-            cx = (np.arange(grid_width).reshape(
-                1, grid_width, 1) + tx) / grid_width
+            # grid cells coordinates for width and height
+            cx, cy = np.meshgrid(np.arange(grid_width),
+                                 np.arange(grid_height),
+                                 indexing='ij')
 
+            # Add axis to match dimensions of t_x & t_y
+            cx = cx[..., np.newaxis]
+            cy = cy[..., np.newaxis]
+
+            # Calculate bounding box coordinates
+            bx = (self.sigmoid(tx) + cx) / grid_width
+            by = (self.sigmoid(ty) + cy) / grid_height
             # Calculate the center of the box (relative to the grid)
-            bw = np.exp(tw) * anchor_w / image_width
-            bh = np.exp(th) * anchor_h / image_height
+            bw = (np.exp(tw) * anchor_w) / self.model.input.shape[1]
+            bh = (np.exp(th) * anchor_h) / self.model.input.shape[2]
 
             # Convert to coordinates of (x1, y1) and (x2, y2)
-            x1 = cx - bw / 2
-            y1 = cy - bh / 2
-            x2 = cx + bw / 2
-            y2 = cy + bh / 2
-
-            # Clip the coordinates to be within the image boundaries
-            x1 = np.clip(x1, 0, 1)
-            y1 = np.clip(y1, 0, 1)
-            x2 = np.clip(x2, 0, 1)
-            y2 = np.clip(y2, 0, 1)
-
-            # Convert to absolute coordinates based on image size
-            x1_abs = x1 * image_width
-            y1_abs = y1 * image_height
-            x2_abs = x2 * image_width
-            y2_abs = y2 * image_height
+            x1 = (bx - bw / 2) * image_width
+            y1 = (by - bh / 2) * image_height
+            x2 = (bx + bw / 2) * image_width
+            y2 = (by + bh / 2) * image_height
 
             # Concatenate the coordinates into a single array
             box = np.stack([x1, y1, x2, y2], axis=-1)
