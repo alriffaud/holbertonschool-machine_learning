@@ -119,30 +119,6 @@ class Yolo:
 
         return boxes, box_confidences, box_class_probs
 
-    def nms(self, boxes, scores, iou_threshold):
-        """
-        Performs non-max suppression using TensorFlow's built-in function.
-        Args:
-            boxes: numpy.ndarray of shape (m, 4) containing the bounding boxes.
-            scores: numpy.ndarray of shape (m,) containing the scores of the
-            boxes.
-            iou_threshold: The IoU threshold used to discard overlapping boxes.
-        Returns:
-            keep: numpy.ndarray of shape (n,) containing the indices of the
-            boxes to keep.
-        """
-        # Convert boxes and scores to tensors
-        boxes_tensor = tf.convert_to_tensor(boxes, dtype=tf.float32)
-        scores_tensor = tf.convert_to_tensor(scores, dtype=tf.float32)
-
-        # Perform Non-Maximum Suppression using TensorFlow
-        selected_indices = tf.image.non_max_suppression(
-            boxes_tensor, scores_tensor, max_output_size=boxes.shape[0],
-            iou_threshold=iou_threshold)
-
-        # Convert the selected indices back to numpy array and return
-        return selected_indices.numpy()
-
     def filter_boxes(self, boxes, box_confidences, box_class_probs):
         """
         Filter boxes.
@@ -191,6 +167,30 @@ class Yolo:
         box_scores = np.concatenate(box_scores)
 
         return filtered_boxes, box_classes, box_scores
+
+    def nms(self, boxes, scores, iou_threshold):
+        """
+        Performs non-max suppression using TensorFlow's built-in function.
+        Args:
+            boxes: numpy.ndarray of shape (m, 4) containing the bounding boxes.
+            scores: numpy.ndarray of shape (m,) containing the scores of the
+            boxes.
+            iou_threshold: The IoU threshold used to discard overlapping boxes.
+        Returns:
+            keep: numpy.ndarray of shape (n,) containing the indices of the
+            boxes to keep.
+        """
+        # Convert boxes and scores to tensors
+        boxes_tensor = tf.convert_to_tensor(boxes, dtype=tf.float32)
+        scores_tensor = tf.convert_to_tensor(scores, dtype=tf.float32)
+
+        # Perform Non-Maximum Suppression using TensorFlow
+        selected_indices = tf.image.non_max_suppression(
+            boxes_tensor, scores_tensor, max_output_size=boxes.shape[0],
+            iou_threshold=iou_threshold)
+
+        # Convert the selected indices back to numpy array and return
+        return selected_indices.numpy()
 
     def non_max_suppression(self, filtered_boxes, box_classes, box_scores):
         """ This function performs non-max suppression on the boundary boxes.
