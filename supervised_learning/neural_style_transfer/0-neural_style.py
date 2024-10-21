@@ -59,6 +59,7 @@ class NST:
         else:
             w_new = 512
             h_new = int(h * w_new / w)
-        image = tf.image.resize(image, (h_new, w_new))
+        image = tf.convert_to_tensor(image, dtype=tf.float32)
+        image = tf.image.resize(image, (h_new, w_new), method="bicubic")
         image = tf.clip_by_value(image / 255.0, 0, 1)
         return image[tf.newaxis, ...]
