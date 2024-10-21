@@ -76,6 +76,10 @@ class NST:
         # Load the VGG19 model.
         vgg = tf.keras.applications.VGG19(include_top=False,
                                           weights='imagenet')
+        # Replace MaxPooling layers with Average Pooling
+        for layer in vgg.layers:
+            if isinstance(layer, tf.keras.layers.MaxPooling2D):
+                layer.__class__ = tf.keras.layers.AveragePooling2D
         # Make sure that the model is non-trainable
         vgg.trainable = False
         # Get output layers corresponding to style and content layers
