@@ -22,14 +22,14 @@ class NST:
         - alpha (float): the weight for content cost.
         - beta (float): the weight for style cost.
         """
-        if (not isinstance(style_image, np.ndarray)
-                or len(style_image.shape) != 3):
-            raise TypeError("style_image must be a numpy.ndarray with shape \
-                (h, w, 3)")
+        error1 = "style_image must be a numpy.ndarray with shape (h, w, 3)"
+        error2 = "content_image must be a numpy.ndarray with shape (h, w, 3)"
+        if (not isinstance(style_image, np.ndarray) or style_image.ndim != 3
+                or style_image.shape[-1] != 3):
+            raise TypeError(error1)
         if (not isinstance(content_image, np.ndarray)
-                or len(content_image.shape) != 3):
-            raise TypeError("content_image must be a numpy.ndarray with shape \
-                (h, w, 3)")
+                or content_image.ndim != 3 or content_image.shape[-1] != 3):
+            raise TypeError(error2)
         if not isinstance(alpha, (int, float)) or alpha < 0:
             raise TypeError("alpha must be a non-negative number")
         if not isinstance(beta, (int, float)) or beta < 0:
@@ -48,9 +48,10 @@ class NST:
         Args:
             image (numpy.ndarray): the image to be rescaled.
         """
-        if not isinstance(image, np.ndarray) or len(image.shape) != 3:
-            raise TypeError("image must be a numpy.ndarray with shape \
-                (h, w, 3)")
+        error = "image must be a numpy.ndarray with shape (h, w, 3)"
+        if (not isinstance(image, np.ndarray) or len(image.shape) != 3
+                or image.shape[-1] != 3):
+            raise TypeError(error)
         h, w, _ = image.shape
         if h > w:
             h_new = 512
