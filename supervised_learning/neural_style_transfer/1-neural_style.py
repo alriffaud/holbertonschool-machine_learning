@@ -39,6 +39,8 @@ class NST:
         self.content_image = self.scale_image(content_image)
         self.alpha = alpha
         self.beta = beta
+        # Load the model
+        self.load_model()
 
     @staticmethod
     def scale_image(image):
@@ -71,14 +73,13 @@ class NST:
         This method loads the VGG19 model for Neural Style Transfer.
         It returns the model.
         """
-        # Load the VGG19 model with Average Pooling.
+        # Load the VGG19 model.
         vgg = tf.keras.applications.VGG19(include_top=False,
                                           weights='imagenet')
-        # Custom object to pass Average Pooling to the model.
-        custom_objects = {'MaxPooling2D': tf.keras.layers.AveragePooling2D}
-        # Save the model after loading to apply the custom object.
-        vgg.save("base_model")
-        # Load the model with custom object to avoid warnings.
-        custom_model = tf.keras.models.load_model("base_model",
-                                                  custom_objects=custom_objects)
-        return custom_model
+        # Make sure that the model is non-trainable
+        vgg.trainable = False
+        # Get output layers corresponding to style and content layers
+        outputs = [vgg.get_layer(layer).output for layer in self.style_layers]
+        outputs.append(vgg.get_layer(self.content_layer).output)
+        # Create a model that returns the outputs of the VGG19 model
+        self.model = tf.keras.models.Model(inputs=vgg.input, outputs=outputs)
