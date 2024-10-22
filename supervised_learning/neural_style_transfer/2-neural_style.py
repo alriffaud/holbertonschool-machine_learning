@@ -114,7 +114,6 @@ class NST:
         gram = tf.expand_dims(gram, axis=0)
 
         # Normalize by number of locations (h * w) then return gram tensor
-        input_shape = tf.shape(input_layer)
-        nb_locations = tf.cast(input_shape[1] * input_shape[2], tf.float32)
+        nb_locations = tf.cast(h * w, tf.float32)
 
         return gram / nb_locations
