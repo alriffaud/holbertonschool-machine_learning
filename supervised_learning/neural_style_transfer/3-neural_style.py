@@ -75,13 +75,17 @@ class NST:
         This method loads the VGG19 model for Neural Style Transfer.
         It returns the model.
         """
-        # Load the VGG19 model.
-        vgg = tf.keras.applications.VGG19(include_top=False,
-                                          weights='imagenet')
+        # Load the VGG19 model
+        base_vgg = tf.keras.applications.VGG19(include_top=False,
+                                               weights='imagenet')
         # Replace MaxPooling layers with Average Pooling
-        for layer in vgg.layers:
-            if isinstance(layer, tf.keras.layers.MaxPooling2D):
-                layer.__class__ = tf.keras.layers.AveragePooling2D
+        # Achieved by utilizing the custom_objects parameter
+        # during model loading
+        custom_object = {"MaxPooling2D": tf.keras.layers.AveragePooling2D}
+        base_vgg.save("base_vgg")
+        # Reload the VGG model with the pooling layers swapped
+        vgg = tf.keras.models.load_model("base_vgg",
+                                         custom_objects=custom_object)
         # Make sure that the model is non-trainable
         vgg.trainable = False
         # Get output layers corresponding to style and content layers
@@ -131,18 +135,16 @@ class NST:
             A list of tf.Tensor objects containing the style features and the
             content feature.
         """
-        # Ensure the images are preprocessed correctly
-        preprocessed_style = tf.keras.applications.vgg19.preprocess_input(
-            self.style_image * 255)
-        preprocessed_content = tf.keras.applications.vgg19.preprocess_input(
+        # Preprocess the images
+        content_image = tf.keras.applications.vgg19.preprocess_input(
             self.content_image * 255)
-
-        # Get the outputs from the model with preprocessed images as input
-        style_outputs = self.model(preprocessed_style)[:-1]
-
-        # Set content_feature, no further processing required
-        self.content_feature = self.model(preprocessed_content)[-1]
-
-        # Compute and set Gram matrices for the style layers outputs
-        self.gram_style_features = [self.gram_matrix(
-            output) for output in style_outputs]
+        style_image = tf.keras.applications.vgg19.preprocess_input(
+            self.style_image * 255)
+        # Get the style features and content features
+        style_outputs = self.model(style_image)
+        content_outputs = self.model(content_image)
+        # Calculate the gram matrices for the style features
+        self.gram_style_features = [self.gram_matrix(style_feature)
+                                    for style_feature in style_outputs[:-1]]
+        # Get the content feature
+        self.content_feature = content_outputs[-1]
