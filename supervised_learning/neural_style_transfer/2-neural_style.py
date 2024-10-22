@@ -104,7 +104,7 @@ class NST:
         if (not isinstance(input_layer, (tf.Tensor, tf.Variable))
                 or len(input_layer.shape) != 4):
             raise TypeError(error)
-        input_layer = tf.cast(input_layer, tf.float32) / 255.0
+        input_layer = tf.cast(input_layer, tf.float32)
         _, h, w, c = input_layer.shape
         # Reshape the features of the layer to a 2D matrix
         F = tf.reshape(input_layer, (h * w, c))
