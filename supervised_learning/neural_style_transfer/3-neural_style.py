@@ -131,16 +131,18 @@ class NST:
             A list of tf.Tensor objects containing the style features and the
             content feature.
         """
-        # Preprocess the images
-        content_image = tf.keras.applications.vgg19.preprocess_input(
-            self.content_image * 255)
-        style_image = tf.keras.applications.vgg19.preprocess_input(
+        # Ensure the images are preprocessed correctly
+        preprocessed_style = tf.keras.applications.vgg19.preprocess_input(
             self.style_image * 255)
-        # Get the style features and content features
-        style_outputs = self.model(style_image)
-        content_outputs = self.model(content_image)
-        # Calculate the gram matrices for the style features
-        self.gram_style_features = [self.gram_matrix(style_feature)
-                                    for style_feature in style_outputs[:-1]]
-        # Get the content feature
-        self.content_feature = content_outputs[-1]
+        preprocessed_content = tf.keras.applications.vgg19.preprocess_input(
+            self.content_image * 255)
+
+        # Get the outputs from the model with preprocessed images as input
+        style_outputs = self.model(preprocessed_style)[:-1]
+
+        # Set content_feature, no further processing required
+        self.content_feature = self.model(preprocessed_content)[-1]
+
+        # Compute and set Gram matrices for the style layers outputs
+        self.gram_style_features = [self.gram_matrix(
+            output) for output in style_outputs]
