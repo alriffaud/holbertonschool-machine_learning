@@ -104,7 +104,7 @@ class NST:
         if (not isinstance(input_layer, (tf.Tensor, tf.Variable))
                 or len(input_layer.shape) != 4):
             raise TypeError(error)
-        input_layer = tf.cast(input_layer, tf.float32)
+
         _, h, w, c = input_layer.shape
         # Reshape the features of the layer to a 2D matrix
         F = tf.reshape(input_layer, (h * w, c))
@@ -112,4 +112,9 @@ class NST:
         gram = tf.matmul(F, F, transpose_a=True)
         # Expand dimensions to have shape (1, c, c)
         gram = tf.expand_dims(gram, axis=0)
-        return gram
+
+        # Normalize by number of locations (h * w) then return gram tensor
+        input_shape = tf.shape(input_layer)
+        nb_locations = tf.cast(input_shape[1] * input_shape[2], tf.float32)
+
+        return gram / nb_locations
