@@ -186,7 +186,8 @@ class NST:
         len_style_layers = len(self.style_layers)
         error = f"style_outputs must be a list with a length of \
 {len_style_layers}"
-        if len(style_outputs) != len_style_layers:
+        if (not isinstance(style_outputs, list)
+                or len(style_outputs) != len_style_layers):
             raise TypeError(error)
         style_cost = 0
         for target, output in zip(self.gram_style_features, style_outputs):
