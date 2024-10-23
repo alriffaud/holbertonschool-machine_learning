@@ -164,9 +164,11 @@ class NST:
         if (not isinstance(style_output, (tf.Tensor, tf.Variable))
                 or len(style_output.shape) != 4):
             raise TypeError(error)
-        error = "gram_target must be a tensor of shape [1, {c}, {c}]"
+        # last dimension of style_output
+        c = style_output.shape[-1]
+        error = f"gram_target must be a tensor of shape [1, {c}, {c}]"
         if (not isinstance(gram_target, (tf.Tensor, tf.Variable))
-                or len(gram_target.shape) != 3):
+                or gram_target.shape != (1, c, c)):
             raise TypeError(error)
         # Calculate the style cost
         gram_style = self.gram_matrix(style_output)
