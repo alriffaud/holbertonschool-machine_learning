@@ -334,6 +334,22 @@ class NST:
         best_cost = float('inf')
         best_image = None
 
+        # Special case for when iterations == 1
+        if iterations == 1:
+            # Calculate gradients and costs for one iteration
+            grads, J_total, J_content, J_style, J_var = self.compute_grads(
+                generated_image)
+            optimizer.apply_gradients([(grads, generated_image)])
+            generated_image.assign(tf.clip_by_value(generated_image, 0, 1))
+
+            # Store the best image
+            best_cost = J_total
+            best_image = generated_image[0]
+            print(f"Cost at iteration {1}: {J_total.numpy()}, \
+content {J_content.numpy()}, style {J_style.numpy()}, var {J_var.numpy()}")
+
+            return best_image.numpy(), best_cost.numpy()
+
         for i in range(iterations + 1):
             with tf.GradientTape() as tape:
                 grads, J_total, J_content, J_style, J_var = self.compute_grads(
