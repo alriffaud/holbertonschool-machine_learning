@@ -334,6 +334,15 @@ class NST:
         best_cost = float('inf')
         best_image = None
 
+        if iterations == 1:
+            step = 1
+            prev_image = generated_image
+            generated_image, J_total, J_content, J_style, J_var = \
+                self.total_cost(generated_image)
+            print(f"Cost at iteration 0: {J_total.numpy()}, \
+content {J_content.numpy()}, style {J_style.numpy()}, var {J_var.numpy()}")
+            return generated_image.numpy(), J_total.numpy()
+
         for i in range(iterations + 1):
             with tf.GradientTape() as tape:
                 grads, J_total, J_content, J_style, J_var = self.compute_grads(
