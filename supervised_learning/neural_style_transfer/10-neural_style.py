@@ -367,10 +367,10 @@ content {J_content.numpy()}, style {J_style.numpy()}, var {J_var.numpy()}")
         Returns:
             The total variation cost.
         """
-        s = generated_image.shape
-        error = f"generated_image must be a tensor of shape {s}"
+        len_image = len(generated_image.shape)
+        error = f"image must be a tensor of rank 3 or 4"
         if (not isinstance(generated_image, (tf.Tensor, tf.Variable))
-                or generated_image.shape != s):
+                or (len_image != 4 and len_image != 3)):
             raise TypeError(error)
         # Calculate the total variation cost
         var_cost = tf.image.total_variation(generated_image)
