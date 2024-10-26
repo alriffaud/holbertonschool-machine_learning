@@ -294,70 +294,55 @@ class NST:
             generated_image is the generated image.
             cost is the cost of the generated image.
         """
-        error = "iterations must be an integer"
         if not isinstance(iterations, int):
-            raise TypeError(error)
-        error = "iterations must be positive"
-        if isinstance(iterations, int) and iterations <= 0:
-            raise TypeError(error)
-        error = "step must be an integer"
-        if step is None or not isinstance(step, int):
-            raise TypeError(error)
-        error = "step must be positive and less than iterations"
-        if (step is not None and isinstance(step, int)
-                and not (step > 0 or step < iterations)):
-            raise TypeError(error)
-        error = "lr must be a number"
+            raise TypeError("iterations must be an integer")
+        if iterations <= 0:
+            raise ValueError("iterations must be positive")
+        if step is not None:
+            if not isinstance(step, int):
+                raise TypeError("step must be an integer")
+            if step <= 0 or step >= iterations:
+                raise ValueError(
+                    "step must be positive and less than iterations")
         if not isinstance(lr, (int, float)):
-            raise TypeError(error)
-        error = "lr must be positive"
-        if isinstance(lr, (int, float)) and lr <= 0:
-            raise TypeError(error)
-        error = "beta1 must be a float"
+            raise TypeError("lr must be a number")
+        if lr <= 0:
+            raise ValueError("lr must be positive")
         if not isinstance(beta1, float):
-            raise TypeError(error)
-        error = "beta1 must be in the range [0, 1]"
-        if isinstance(beta1, float) and (beta1 < 0 or beta1 > 1):
-            raise TypeError(error)
-        error = "beta2 must be a float"
+            raise TypeError("beta1 must be a float")
+        if beta1 < 0 or beta1 > 1:
+            raise ValueError("beta1 must be in the range [0, 1]")
         if not isinstance(beta2, float):
-            raise TypeError(error)
-        error = "beta2 must be in the range [0, 1]"
-        if isinstance(beta2, float) and (beta2 < 0 or beta2 > 1):
-            raise TypeError(error)
+            raise TypeError("beta2 must be a float")
+        if beta2 < 0 or beta2 > 1:
+            raise ValueError("beta2 must be in the range [0, 1]")
 
-        # Initialize the Adam optimizer
-        optimizer = tf.optimizers.Adam(learning_rate=lr, beta_1=beta1,
-                                       beta_2=beta2)
-        # Initialize the generated image to be a copy of the content image
         generated_image = tf.Variable(self.content_image)
-        # Perform optimization
-        best_cost = float('inf')
-        best_image = None
+        optimizer = tf.train.AdamOptimizer(learning_rate=lr,
+                                           beta1=beta1, beta2=beta2)
+
+        prev_total_cost = float('inf')
+        prev_image = generated_image
 
         for i in range(iterations + 1):
-            with tf.GradientTape() as tape:
-                grads, J_total, J_content, J_style = self.compute_grads(
-                    generated_image)
+            computed = self.compute_grads(generated_image)
+            gradients, total_cost, content_cost, style_cost = computed
 
-            # Applying gradients to the generated image
-            optimizer.apply_gradients([(grads, generated_image)])
-            generated_image.assign(tf.clip_by_value(generated_image, 0, 1))
+            if i % step == 0 or i == iterations:
+                print("Cost at iteration {}: {}, content {}, style {}".
+                      format(i, total_cost, content_cost, style_cost))
 
-            # Print each `step`
-            if step is not None and i % step == 0:
-                print(f"Cost at iteration {i}: {J_total.numpy()}, \
-content {J_content.numpy()}, style {J_style.numpy()}")
+            if i != iterations:
+                optimizer.apply_gradients([(gradients, generated_image)])
+                clipped_image = tf.clip_by_value(
+                    generated_image, clip_value_min=0, clip_value_max=1)
+                generated_image.assign(clipped_image)
 
-            # Save the best image
-            if J_total < best_cost:
-                best_cost = J_total
+            if total_cost <= prev_total_cost:
+                prev_total_cost = total_cost
                 prev_image = generated_image
-        # Removes the extra dimension from the image
-        best_image = prev_image[0]
-        print(best_image.shape)
-        print(best_image.min(), best_image.max())
-        print(best_image.min() >= 0)
-        print(best_image.max() <= 1)
-        print(best_image.shape == (256, 512, 3))
-        return best_image.numpy(), best_cost.numpy()
+
+        cost = prev_total_cost.numpy()
+        generated_image = prev_image[0].numpy()
+
+        return (generated_image, cost)
