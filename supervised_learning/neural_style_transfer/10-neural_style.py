@@ -304,17 +304,13 @@ class NST:
         """
         if not isinstance(iterations, int):
             raise TypeError("iterations must be an integer")
-        if iterations <= 0:
+        if iterations < 1:
             raise ValueError("iterations must be positive")
-        if iterations == 1:
-            step = 1
-        if step is not None:
-            if not isinstance(step, int):
-                raise TypeError("step must be an integer")
-            if step <= 0 or step > iterations:
-                raise ValueError(
-                    "step must be positive and less than iterations")
-        if not isinstance(lr, (int, float)):
+        if step is not None and not isinstance(step, int):
+            raise TypeError("step must be an integer")
+        if step is not None and (step <= 0 or step >= iterations):
+            raise ValueError("step must be positive and less than iterations")
+        if not isinstance(lr, (float, int)):
             raise TypeError("lr must be a number")
         if lr <= 0:
             raise ValueError("lr must be positive")
@@ -335,24 +331,6 @@ class NST:
         # Perform optimization
         best_cost = float('inf')
         best_image = None
-
-        # Special case for when iterations == 1
-        if iterations == 1:
-            with tf.GradientTape() as tape:
-                grads, J_total, J_content, J_style, J_var = self.compute_grads(
-                    generated_image)
-
-            # Applying gradients to the generated image
-            optimizer.apply_gradients([(grads, generated_image)])
-            generated_image.assign(tf.clip_by_value(generated_image, 0, 1))
-
-            print(f"Cost at iteration {0}: {J_total.numpy()}, \
-content {J_content.numpy()}, style {J_style.numpy()}, var {J_var.numpy()}")
-
-            prev_image = generated_image
-            # Removes the extra dimension from the image
-            best_image = prev_image[0]
-            return best_image.numpy(), J_total.numpy()
 
         for i in range(iterations + 1):
             with tf.GradientTape() as tape:
