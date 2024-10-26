@@ -317,32 +317,33 @@ class NST:
         if beta2 < 0 or beta2 > 1:
             raise ValueError("beta2 must be in the range [0, 1]")
 
+        # Initialize the Adam optimizer
+        optimizer = tf.optimizers.Adam(learning_rate=lr, beta_1=beta1,
+                                       beta_2=beta2)
+        # Initialize the generated image to be a copy of the content image
         generated_image = tf.Variable(self.content_image)
-        optimizer = tf.train.AdamOptimizer(learning_rate=lr,
-                                           beta1=beta1, beta2=beta2)
-
-        prev_total_cost = float('inf')
-        prev_image = generated_image
+        # Perform optimization
+        best_cost = float('inf')
+        best_image = None
 
         for i in range(iterations + 1):
-            computed = self.compute_grads(generated_image)
-            gradients, total_cost, content_cost, style_cost = computed
+            with tf.GradientTape() as tape:
+                grads, J_total, J_content, J_style = self.compute_grads(
+                    generated_image)
 
-            if i % step == 0 or i == iterations:
-                print("Cost at iteration {}: {}, content {}, style {}".
-                      format(i, total_cost, content_cost, style_cost))
+            # Applying gradients to the generated image
+            optimizer.apply_gradients([(grads, generated_image)])
+            generated_image.assign(tf.clip_by_value(generated_image, 0, 1))
 
-            if i != iterations:
-                optimizer.apply_gradients([(gradients, generated_image)])
-                clipped_image = tf.clip_by_value(
-                    generated_image, clip_value_min=0, clip_value_max=1)
-                generated_image.assign(clipped_image)
+            # Print each `step`
+            if step is not None and i % step == 0:
+                print(f"Cost at iteration {i}: {J_total.numpy()}, \
+content {J_content.numpy()}, style {J_style.numpy()}")
 
-            if total_cost <= prev_total_cost:
-                prev_total_cost = total_cost
+            # Save the best image
+            if J_total < best_cost:
+                best_cost = J_total
                 prev_image = generated_image
-
-        cost = prev_total_cost.numpy()
-        generated_image = prev_image[0].numpy()
-
-        return (generated_image, cost)
+        # Removes the extra dimension from the image
+        best_image = prev_image[0]
+        return best_image.numpy(), best_cost.numpy()
