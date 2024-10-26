@@ -355,4 +355,9 @@ content {J_content.numpy()}, style {J_style.numpy()}")
                 prev_image = generated_image
         # Removes the extra dimension from the image
         best_image = prev_image[0]
+        print(best_image.shape)
+        print(best_image.min(), best_image.max())
+        print(best_image.min() >= 0)
+        print(best_image.max() <= 1)
+        print(best_image.shape == (256, 512, 3))
         return best_image.numpy(), best_cost.numpy()
