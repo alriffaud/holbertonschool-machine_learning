@@ -42,6 +42,7 @@ class NST:
         self.content_image = self.scale_image(content_image)
         self.alpha = alpha
         self.beta = beta
+        self.var = var
         # Load the model
         self.load_model()
         # Generate the features
@@ -224,6 +225,7 @@ class NST:
                 J is the total cost.
                 J_content is the content cost.
                 J_style is the style cost.
+                J_var is the variation cost.
         """
         s = self.content_image.shape
         error = f"generated_image must be a tensor of shape {s}"
@@ -231,20 +233,22 @@ class NST:
                 or generated_image.shape != s):
             raise TypeError(error)
         # Preprocess the generated image
-        generated_image = tf.keras.applications.vgg19.preprocess_input(
+        prep_gen_image = tf.keras.applications.vgg19.preprocess_input(
             generated_image * 255)
         # Get the outputs of the generated image
-        outputs = self.model(generated_image)
+        outputs = self.model(prep_gen_image)
         # Separate the style outputs and content output
         style_outputs = outputs[:-1]
         content_output = outputs[-1]
-        # Calculate the style cost
-        style_cost = self.style_cost(style_outputs)
         # Calculate the content cost
-        content_cost = self.content_cost(content_output)
+        J_content = self.content_cost(content_output)
+        # Calculate the style cost
+        J_style = self.style_cost(style_outputs)
+        # Calculate the variation cost
+        J_var = self.variational_cost(generated_image)
         # Calculate the total cost
-        total_cost = self.alpha * content_cost + self.beta * style_cost
-        return total_cost, content_cost, style_cost
+        J = self.alpha * J_content + self.beta * J_style + self.var * J_var
+        return J, J_content, J_style, J_var
 
     def compute_grads(self, generated_image):
         """
@@ -269,10 +273,11 @@ class NST:
         with tf.GradientTape() as tape:
             # Get the total cost
             tape.watch(generated_image)
-            J_total, J_content, J_style = self.total_cost(generated_image)
+            J_total, J_content, J_style, J_var = self.total_cost(
+                generated_image)
         # Get the gradients
         gradients = tape.gradient(J_total, generated_image)
-        return gradients, J_total, J_content, J_style
+        return gradients, J_total, J_content, J_style, J_var
 
     def generate_image(self, iterations=1000, step=None, lr=0.01,
                        beta1=0.9, beta2=0.99):
@@ -331,15 +336,12 @@ class NST:
 
         for i in range(iterations + 1):
             with tf.GradientTape() as tape:
-                grads, J_total, J_content, J_style = self.compute_grads(
+                grads, J_total, J_content, J_style, J_var = self.compute_grads(
                     generated_image)
 
             # Applying gradients to the generated image
             optimizer.apply_gradients([(grads, generated_image)])
             generated_image.assign(tf.clip_by_value(generated_image, 0, 1))
-
-            # Calculate the variation cost
-            J_var = self.variational_cost(generated_image)
 
             # Print each `step`
             if step is not None and i % step == 0:
@@ -371,8 +373,8 @@ content {J_content.numpy()}, style {J_style.numpy()}, var {J_var.numpy()}")
                 or generated_image.shape != s):
             raise TypeError(error)
         # Calculate the total variation cost
-        a = tf.square(generated_image[:, :-1, :-1, :]
-                      - generated_image[:, 1:, :-1, :])
-        b = tf.square(generated_image[:, :-1, :-1, :]
-                      - generated_image[:, :-1, 1:, :])
-        return tf.reduce_sum(tf.pow(a + b, 1.25))
+        var_cost = tf.image.total_variation(generated_image)
+        # Remove the extra dimension
+        var_cost = tf.squeeze(var_cost)
+
+        return var_cost
