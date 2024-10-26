@@ -336,12 +336,7 @@ class NST:
 
         if iterations == 1:
             step = 1
-            prev_image = generated_image
-            generated_image, J_total, J_content, J_style, J_var = \
-                self.total_cost(generated_image)
-            print(f"Cost at iteration 0: {J_total.numpy()}, \
-content {J_content.numpy()}, style {J_style.numpy()}, var {J_var.numpy()}")
-            return generated_image.numpy(), J_total.numpy()
+        prev_image = generated_image
 
         for i in range(iterations + 1):
             with tf.GradientTape() as tape:
