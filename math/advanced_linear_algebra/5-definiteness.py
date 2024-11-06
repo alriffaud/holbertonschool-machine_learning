@@ -2,7 +2,6 @@
 """ This module defines the definiteness function wich returns the definiteness
 of a matrix. """
 import numpy as np
-from numpy.linalg import eigvals
 
 
 def definiteness(matrix):
@@ -22,7 +21,7 @@ def definiteness(matrix):
         return None
     if not all(len(row) == len(matrix) for row in matrix):
         return None
-    eigenvalues = eigvals(matrix)
+    eigenvalues = np.linalg.eigvals(matrix)
     if np.any(np.iscomplex(eigenvalues)):
         return None
     if np.all(eigenvalues > 0):
