@@ -21,6 +21,8 @@ def definiteness(matrix):
         return None
     if not all(len(row) == len(matrix) for row in matrix):
         return None
+    if not np.array_equal(matrix, matrix.T):
+        return None
     eigenvalues = np.linalg.eigvals(matrix)
     if np.any(np.iscomplex(eigenvalues)):
         return None
