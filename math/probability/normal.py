@@ -30,7 +30,7 @@ class Normal:
 
     def z_score(self, x):
         """
-        Calculates the z-score of a given x-value.
+        This method calculates the z-score of a given x-value.
         Args:
             x (float): The x-value.
         Returns:
@@ -40,10 +40,37 @@ class Normal:
 
     def x_value(self, z):
         """
-        Calculates the x-value of a given z-score.
+        This method calculates the x-value of a given z-score.
         Args:
             z (float): The z-score.
         Returns:
             The x-value of z.
         """
         return z * self.stddev + self.mean
+
+    def pdf(self, x):
+        """
+        This method calculates the value of the PDF for a given x-value.
+        Args:
+            x (float): The x-value.
+        Returns:
+            The PDF value for x.
+        """
+        e = 2.7182818285
+        pi = 3.1415926536
+        return (1 / (self.stddev * (2 * pi) ** 0.5)
+                * e ** (-0.5 * ((x - self.mean) / self.stddev) ** 2))
+
+    def cdf(self, x):
+        """
+        This method calculates the value of the CDF for a given x-value.
+        Args:
+            x (float): The x-value.
+        Returns:
+            The CDF value for x.
+        """
+        pi = 3.1415926536
+        x = (x - self.mean) / (self.stddev * 2 ** 0.5)
+        erf = (2 / pi ** 0.5
+               * (x - x ** 3 / 3 + x ** 5 / 10 - x ** 7 / 42 + x ** 9 / 216))
+        return (1 + erf) / 2
