@@ -2,6 +2,19 @@
 """ This module contains the binomial class. """
 
 
+def factorial(k):
+    """
+    This method calculates the factorial of a number.
+    Args:
+        - k: The number to calculate the factorial of.
+    Returns:
+        The factorial of k.
+    """
+    if k == 0:
+        return 1
+    return k * factorial(k - 1)
+
+
 class Binomial:
     """ This class represents a binomial distribution """
     def __init__(self, data=None, n=1, p=0.5):
@@ -34,3 +47,38 @@ class Binomial:
             p = 1 - (variance / mean)
             self.n = round(mean / p)
             self.p = mean / self.n
+
+    def pmf(self, k):
+        """
+        This method calculates the value of the PMF for a given number of
+        successes.
+        Args:
+            k (int): The number of successes.
+        Returns:
+            The PMF value for k.
+        """
+        if k < 0:
+            return 0
+        k = round(k)
+        n = self.n
+        p = self.p
+        q = 1 - p
+        return (factorial(n) / (factorial(k) * factorial(n - k))
+                * (p ** k) * (q ** (n - k)))
+
+    def cdf(self, k):
+        """
+        This method calculates the value of the CDF for a given number of
+        successes.
+        Args:
+            k (int): The number of successes.
+        Returns:
+            The CDF value for k.
+        """
+        if k < 0:
+            return 0
+        k = round(k)
+        cdf = 0
+        for i in range(k + 1):
+            cdf += self.pmf(i)
+        return cdf
