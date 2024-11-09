@@ -79,7 +79,12 @@ class Leaf(Node):
     """ This class inherits from Node and represents a leaf in the decision
     tree. """
     def __init__(self, value, depth=None):
-        """ This is the __init__ method. """
+        """
+        This is the __init__ method.
+        Args:
+            value (int): the value of the leaf.
+            depth (int): the depth of the leaf in the tree.
+        """
         super().__init__()
         self.value = value
         self.is_leaf = True
