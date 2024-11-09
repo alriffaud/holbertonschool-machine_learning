@@ -8,18 +8,18 @@ def convolve(images, kernels, padding='same', stride=(1, 1)):
     This function performs convolution on images using multiple kernels.
     Args:
         images (np.ndarray): a matrix of shape (m, h, w, c) containing multiple
-        images. m is the number of images, h is the height in pixels, w is the
-        width in pixels and c is the number of channels in the image.
+            images. m is the number of images, h is the height in pixels, w is
+            the width in pixels and c is the number of channels in the image.
         kernels (np.ndarray): a matrix of shape (kh, kw, c, nc) containing the
-        kernel for the convolution. kh is the height of the kernel, kw is the
-        width of the kernel and nc is the number of kernels.
+            kernel for the convolution. kh is the height of the kernel, kw is
+            the width of the kernel and nc is the number of kernels.
         padding (tuple): a tuple of (Ph, Pw) containing the padding to apply.
-        Ph is the padding for the height and Pw is the padding for the width.
-        If padding is 'same', the output size is the same as the input size.
-        If padding is 'valid', the output size is the input size minus the
-        kernel size plus one.
+            Ph is the padding for the height and Pw is the padding for the
+            width. If padding is 'same', the output size is the same as the input
+            size. If padding is 'valid', the output size is the input size minus
+            the kernel size plus one.
         stride (tuple): a tuple of (Sh, Sw) containing the stride to apply. Sh
-        is the stride for the height and Sw is the stride for the width.
+            is the stride for the height and Sw is the stride for the width.
     Returns: a np.ndarray containing the convolved images.
     """
     m, h, w, c = images.shape
