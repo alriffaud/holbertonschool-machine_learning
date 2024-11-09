@@ -8,15 +8,15 @@ def pool(images, kernel_shape, stride, mode='max'):
     This function performs pooling on images.
     Args:
         images (np.ndarray): a matrix of shape (m, h, w, c) containing multiple
-        images. m is the number of images, h is the height in pixels, w is the
-        width in pixels and c is the number of channels in the image.
+            images. m is the number of images, h is the height in pixels, w is
+            the width in pixels and c is the number of channels in the image.
         kerne_shape (np.ndarray): a matrix of shape (kh, kw) containing the
-        kernel shape for the pooling. kh is the height of the kernel and kw is
-        the width of the kernel.
+            kernel shape for the pooling. kh is the height of the kernel and kw
+            is the width of the kernel.
         stride (tuple): a tuple of (Sh, Sw) containing the stride to apply. Sh
-        is the stride for the height and Sw is the stride for the width.
+            is the stride for the height and Sw is the stride for the width.
         mode (str): a string containing the type of pooling. 'max' indicates
-        max pooling and 'avg' indicates average pooling.
+            max pooling and 'avg' indicates average pooling.
     Returns: a np.ndarray containing the convolved images.
     """
     m, h, w, c = images.shape
