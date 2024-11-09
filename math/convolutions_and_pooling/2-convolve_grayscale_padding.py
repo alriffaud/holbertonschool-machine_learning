@@ -8,11 +8,11 @@ def convolve_grayscale_padding(images, kernel, padding):
     This function performs convolution on grayscale images with custom padding.
     Args:
         images (np.ndarray): a matrix of shape (m, h, w) containing multiple
-        grayscale images. m is the number of images, h is the height in pixels
-        and w is the width in pixels.
+            grayscale images. m is the number of images, h is the height in
+            pixels and w is the width in pixels.
         kernel (np.ndarray): a matrix of shape (kh, kw) containing the kernel
-        for the convolution. kh is the height of the kernel and kw is the width
-        of the kernel.
+            for the convolution. kh is the height of the kernel and kw is the
+            width of the kernel.
         padding (tuple): a tuple of (Ph, Pw) containing the padding to apply.
         Ph is the padding for the height and Pw is the padding for the width.
     Returns: a np.ndarray containing the convolved images.
