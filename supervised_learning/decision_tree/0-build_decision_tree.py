@@ -8,7 +8,16 @@ class Node:
     decision node or a leaf. """
     def __init__(self, feature=None, threshold=None, left_child=None,
                  right_child=None, is_root=False, depth=0):
-        """ This is the __init__ method. """
+        """
+        This is the __init__ method.
+        Args:
+            feature (int): the index of the feature to split on.
+            threshold (float): the threshold to split the feature.
+            left_child (Node): the left child of the node.
+            right_child (Node): the right child of the node.
+            is_root (bool): a boolean indicating if the node is the root.
+            depth (int): the depth of the node in the tree.
+        """
         self.feature = feature
         self.threshold = threshold
         self.left_child = left_child
@@ -39,7 +48,12 @@ class Leaf(Node):
     """ This class inherits from Node and represents a leaf in the decision
     tree. """
     def __init__(self, value, depth=None):
-        """ This is the __init__ method. """
+        """
+        This is the __init__ method.
+        Args:
+            value (int): the value of the leaf.
+            depth (int): the depth of the leaf in the tree.
+        """
         super().__init__()
         self.value = value
         self.is_leaf = True
