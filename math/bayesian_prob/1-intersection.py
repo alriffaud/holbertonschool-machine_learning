@@ -70,6 +70,8 @@ def intersection(x, n, P, Pr):
         raise ValueError("All values in P must be in the range [0, 1]")
     if np.any(Pr < 0) or np.any(Pr > 1):
         raise ValueError("All values in Pr must be in the range [0, 1]")
+    if np.isclose(np.sum(Pr), 1) is False:
+        raise ValueError("Pr must sum to 1")
 
     # Calculate the likelihood of obtaining the data
     # for each probability in P
