@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" This module defines the function likelihood. """
+""" This module defines the likelihood function. """
 import numpy as np
 
 
