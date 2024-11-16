@@ -19,18 +19,11 @@ def pca(X, ndim):
     X_mean = np.mean(X, axis=0)
     X_centered = X - X_mean
 
-    # Calculate the covariance matrix
-    cov_matrix = np.cov(X_centered, rowvar=False)
+    # Perform Singular Value Decomposition
+    U, S, Vt = np.linalg.svd(X_centered, full_matrices=False)
 
-    # Calculate the eigenvalues and eigenvectors of the covariance matrix
-    eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
-
-    # Sort the eigenvectors by eigenvalue in descending order
-    sorted_indices = np.argsort(eigenvalues)[::-1]
-    sorted_eigenvectors = eigenvectors[:, sorted_indices]
-
-    # Select the top 'ndim' eigenvectors
-    W = sorted_eigenvectors[:, :ndim]
+    # Select the top 'ndim' components
+    W = Vt[:ndim].T  # Transpose to get the correct shape
 
     # Transform the data using 'W'
     T = np.dot(X_centered, W)
