@@ -55,10 +55,18 @@ def kmeans(X, k, iterations=1000):
         return None, None
     # Perform K-means iterations
     for _ in range(iterations):
+        # Copy the previous centroids
+        prev_C = np.copy(C)
         # Calculate distances
-        distances = np.linalg.norm(X[:, np.newaxis] - C, axis=2)
+        X_vector = np.repeat(X, k, axis=0)
+        # Reshape to calculate distances
+        X_vector = X_vector.reshape(n, k, d)
+        centroids_vector = np.tile(C, (n, 1))
+        centroids_vector = centroids_vector.reshape(n, k, d)
+        # Calculate distances
+        distances = np.linalg.norm(X_vector - centroids_vector, axis=2)
         # Assign data points to closest centroid
-        clss = np.argmin(distances, axis=1)
+        clss = np.argmin(distances ** 2, axis=1)
         # Update centroids
         new_C = np.empty_like(C)
         # If a cluster is empty, reinitialize a random centroid
