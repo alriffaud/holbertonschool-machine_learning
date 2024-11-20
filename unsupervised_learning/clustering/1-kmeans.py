@@ -71,15 +71,17 @@ def kmeans(X, k, iterations=1000):
         new_C = np.empty_like(C)
         # If a cluster is empty, reinitialize a random centroid
         for i in range(k):
-            points = X[clss == i]
-            if points.shape[0] == 0:
-                new_C[i] = np.random.uniform(np.min(X, axis=0),
-                                             np.max(X, axis=0))
+            indixes = np.where(clss == i)[0]
+            if len(indixes) == 0:
+                C[i] = initialize(X, 1)
             else:
-                new_C[i] = np.mean(points, axis=0)
+                C[i] = np.mean(X[indixes], axis=0)
         # If the centroids don't change, stop the iterations
-        if np.allclose(new_C, C, atol=1e-6):
-            break
-        # Update the centroids
-        C = new_C
+        if np.all(prev_C == C):
+            return C, clss
+        # If the centroids have not converged, repeat the process
+        centroids_vector = np.tile(C, (n, 1))
+        centroids_vector = centroids_vector.reshape(n, k, d)
+        distance = np.linalg.norm(X_vector - centroids_vector, axis=2)
+        clss = np.argmin(distance ** 2, axis=1)
     return C, clss
