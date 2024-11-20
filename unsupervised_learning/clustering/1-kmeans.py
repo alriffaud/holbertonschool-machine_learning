@@ -70,7 +70,7 @@ def kmeans(X, k, iterations=1000):
             else:
                 new_C[i] = np.mean(points, axis=0)
         # If the centroids don't change, stop the iterations
-        if np.all(new_C == C):
+        if np.allclose(new_C, C, atol=1e-6):
             break
         # Update the centroids
         C = new_C
