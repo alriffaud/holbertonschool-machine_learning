@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """ This module defines the maximization function. """
 import numpy as np
-expectation = __import__('6-expectation').expectation
 
 
 def maximization(X, g):
