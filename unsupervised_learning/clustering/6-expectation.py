@@ -41,7 +41,7 @@ def expectation(X, pi, m, S):
         return None, None
     if not np.isclose([np.sum(pi)], [1])[0]:
         return None, None
-    # Calculate the likelihood for each data point in each cluster
+    # Calculate the likelihood to each data point in each cluster
     likelihoods = np.zeros((k, n))
     for i in range(k):
         likelihoods[i] = pi[i] * pdf(X, m[i], S[i])
