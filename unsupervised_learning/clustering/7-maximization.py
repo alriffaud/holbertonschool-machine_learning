@@ -24,12 +24,18 @@ def maximization(X, g):
     """
     if not isinstance(X, np.ndarray) or len(X.shape) != 2:
         return None, None, None
-    if not isinstance(g, np.ndarray) or len(g.shape) != 2:
+    if not isinstance(g, np.ndarray) or g.ndim != 2:
         return None, None, None
     # Get the number of data points and dimensions
     n, d = X.shape
     # Get the number of clusters
     k = g.shape[0]
+    # Verify the shapes
+    if g.shape[1] != n:
+        return None, None, None
+    k = g.shape[0]
+    if g.shape[0] != k:
+        return None, None, None
     # Calculate the updated priors
     pi = np.sum(g, axis=1) / n
     # Calculate the updated means
