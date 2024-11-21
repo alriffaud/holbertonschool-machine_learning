@@ -29,7 +29,7 @@ def optimum_k(X, kmin=1, kmax=None, iterations=1000):
         return None, None
     if not isinstance(kmin, int) or kmin <= 0:
         return None, None
-    if kmax is not None and (not isinstance(kmax, int) or kmax < kmin):
+    if kmax is not None and (not isinstance(kmax, int) or kmax <= 0):
         return None, None
     if not isinstance(iterations, int) or iterations <= 0:
         return None, None
@@ -43,20 +43,18 @@ def optimum_k(X, kmin=1, kmax=None, iterations=1000):
     # Initialize results and d_vars
     results = []
     variances = []
-    # Test for each cluster size
+    d_vars = []
+    # Test each cluster size
     for k in range(kmin, kmax + 1):
         # Perform K-means
         C, clss = kmeans(X, k, iterations)
-        if C is None:
-            return None, None
         # Append the results
         results.append((C, clss))
         # Calculate the difference in variance
         var = variance(X, C)
-        if var is None:
-            return None, None
+        # Append the variance to the variance list
         variances.append(var)
-    min_variance = variances[0]
-    d_vars = [min_variance - var for var in variances]
-
+    # Calculate the difference in variance from the smallest cluster size
+    for var in variances:
+        d_vars.append(np.abs(variances[0] - var))
     return results, d_vars
