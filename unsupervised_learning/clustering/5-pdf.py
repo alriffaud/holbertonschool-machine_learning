@@ -39,4 +39,6 @@ def pdf(X, m, S):
     C = 1 / np.sqrt(((2 * np.pi) ** d) * det)
     # Calculate the PDF
     P = C * np.exp(-0.5 * np.sum((X - m) @ inv * (X - m), axis=1))
+    # If any value is less than 1e-300, set it to 1e-300
+    P = np.maximum(P, 1e-300)
     return P
