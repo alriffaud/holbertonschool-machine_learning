@@ -36,6 +36,9 @@ def maximization(X, g):
     k = g.shape[0]
     if g.shape[0] != k:
         return None, None, None
+    # Ensure the sum of all posteriors (over the k clusters) is equal to 1
+    if not np.isclose(np.sum(g, axis=0), np.ones(n,)).all():
+        return None, None, None
     # Calculate the updated priors
     pi = np.sum(g, axis=1) / n
     # Calculate the updated means
