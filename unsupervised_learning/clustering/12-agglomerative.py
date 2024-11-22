@@ -17,11 +17,14 @@ def agglomerative(X, dist):
         clss, a numpy.ndarray of shape (n,) containing the cluster indices for
             each data point.
     """
-    if not isinstance(dist, (int, float)) or dist < 0:
-        return None
-    Z = scipy.cluster.hierarchy.linkage(X, 'ward')
+    if not isinstance(dist, (float, int)) or dist <= 0:
+        raise ValueError("dist must be a positive number.")
+    # Perform agglomerative clustering with Ward linkage
+    Z = scipy.cluster.hierarchy.linkage(X, method='ward')
+    # Get the cluster indices
     clss = scipy.cluster.hierarchy.fcluster(Z, t=dist, criterion='distance')
     plt.figure()
+    # Plot the dendrogram
     scipy.cluster.hierarchy.dendrogram(Z, color_threshold=dist)
     plt.show()
     return clss
