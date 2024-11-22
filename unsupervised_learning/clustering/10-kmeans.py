@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """ This module defines the kmeans function. """
-import numpy as np
 import sklearn.cluster
 
 
@@ -19,8 +18,6 @@ def kmeans(X, k):
         clss is a numpy.ndarray of shape (n,) containing the index of the
             cluster in C that each data point belongs to.
     """
-    if not isinstance(X, np.ndarray) or len(X.shape) != 2:
-        return None, None
     if not isinstance(k, int) or k <= 0:
         return None, None
     kmeans = sklearn.cluster.KMeans(n_clusters=k).fit(X)
