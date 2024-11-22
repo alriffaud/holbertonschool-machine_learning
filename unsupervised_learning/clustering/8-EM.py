@@ -58,7 +58,7 @@ def expectation_maximization(X, k, iterations=1000, tol=1e-5, verbose=False):
             print(f"Log Likelihood after {i} iterations: {l_log:.5f}")
 
         # Check convergence
-        if abs(l_log - l_prev) <= tol:
+        if abs(l_log - l_prev) < tol:
             if verbose:
                 print(f"Log Likelihood after {i} iterations: {l_log:.5f}")
             break
