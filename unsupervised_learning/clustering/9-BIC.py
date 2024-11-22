@@ -60,9 +60,6 @@ def BIC(X, kmin=1, kmax=None, iterations=1000, tol=1e-5, verbose=False):
 
     log_likelihoods = []
     bics = []
-    best_k = None
-    best_result = None
-    best_bic = float('inf')
 
     for k in range(kmin, kmax + 1):
         # Perform EM algorithm to current number of clusters
@@ -73,7 +70,7 @@ def BIC(X, kmin=1, kmax=None, iterations=1000, tol=1e-5, verbose=False):
             return None, None, None, None
 
         # Compute the number of parameters p
-        p = k * d + k * d * (d + 1) // 2 + k - 1
+        p = (k * d) + (k * d * (d + 1) // 2) + (k - 1)
 
         # Compute BIC
         bic = p * np.log(n) - 2 * log_likelihood
@@ -83,7 +80,7 @@ def BIC(X, kmin=1, kmax=None, iterations=1000, tol=1e-5, verbose=False):
         bics.append(bic)
 
         # Check if this is the best BIC
-        if bic < best_bic:
+        if k == kmin or bic < best_bic:
             best_k = k
             best_result = (pi, m, S)
             best_bic = bic
