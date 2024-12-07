@@ -6,6 +6,7 @@ import GPyOpt
 import os
 import matplotlib.pyplot as plt
 
+
 # Define the objective function
 def objective_function(hyperparams):
     """
@@ -26,22 +27,27 @@ def objective_function(hyperparams):
 
     # Define the model
     model = models.Sequential([
-        layers.Dense(units, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(l2_reg)),
+        layers.Dense(units, activation='relu',
+                     kernel_regularizer=tf.keras.regularizers.l2(l2_reg)),
         layers.Dropout(dropout_rate),
         layers.Dense(1, activation='sigmoid')
     ])
-    
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
+
+    model.compile(optimizer=tf.keras.optimizers.Adam(
+        learning_rate=learning_rate),
                   loss='binary_crossentropy',
                   metrics=['accuracy'])
 
     # Early stopping callback
-    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
+    early_stopping = tf.keras.callbacks.EarlyStopping(
+        monitor='val_loss', patience=5)
 
     # Checkpoint callback
-    checkpoint_filepath = f"model_lr{learning_rate:.4f}_units{units}_dropout{dropout_rate:.2f}_l2{l2_reg:.4f}_bs{batch_size}.h5"
+    checkpoint_filepath = f"model_lr{learning_rate:.4f}_units{units}_dropout\
+{dropout_rate:.2f}_l2{l2_reg:.4f}_bs{batch_size}.h5"
     checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-        filepath=checkpoint_filepath, save_best_only=True, save_weights_only=True)
+        filepath=checkpoint_filepath, save_best_only=True,
+        save_weights_only=True)
 
     # Create a dummy dataset
     X_train = np.random.rand(1000, 20)
@@ -60,7 +66,8 @@ def objective_function(hyperparams):
     # Get the best validation loss
     val_loss = min(history.history['val_loss'])
 
-    # Return the negative validation loss (since GPyOpt minimizes the objective function)
+    # Return the negative validation loss (since GPyOpt minimizes the objective
+    # function)
     return val_loss
 
 
@@ -69,7 +76,8 @@ bounds = [
     {'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-4, 1e-1)},
     {'name': 'units', 'type': 'discrete', 'domain': (16, 32, 64, 128, 256)},
     {'name': 'dropout_rate', 'type': 'continuous', 'domain': (0.1, 0.5)},
-    {'name': 'l2_regularization', 'type': 'continuous', 'domain': (1e-4, 1e-2)},
+    {'name': 'l2_regularization', 'type': 'continuous', 'domain': (
+        1e-4, 1e-2)},
     {'name': 'batch_size', 'type': 'discrete', 'domain': (16, 32, 64, 128)}
 ]
 
