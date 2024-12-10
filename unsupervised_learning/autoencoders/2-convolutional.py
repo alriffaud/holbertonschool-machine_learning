@@ -34,21 +34,17 @@ def autoencoder(input_dims, filters, latent_dims):
     latent_space = x
 
     # ---------------- Decoder ---------------- #
-    for f in reversed(filters[:-1]):
-        # Add a Conv2D layer with ReLU activation and 'same' padding
+    latent_input = keras.layers.Input(shape=latent_dims)
+    x = latent_input
+    for f in reversed(filters):
         x = keras.layers.Conv2D(f, (3, 3),
                                 activation='relu', padding='same')(x)
-        # Add an UpSampling2D layer to upsample the image
         x = keras.layers.UpSampling2D((2, 2))(x)
-
-    # Add the second-to-last convolutional layer with 'valid' padding
-    x = keras.layers.Conv2D(filters[-1], (3, 3),
-                            activation='relu', padding='valid')(x)
-
-    # Add the final convolutional layer with sigmoid activation
-    # (output same as input channels)
-    output_img = keras.layers.Conv2D(input_dims[2], (3, 3),
-                                     activation='sigmoid', padding='same')(x)
+    # Add the final convolutional layer to match input dimensions
+    decoded_output = keras.layers.Conv2D(input_dims[2], (3, 3),
+                                         activation='sigmoid',
+                                         padding='same')(x)
+    decoder = keras.models.Model(inputs=latent_input, outputs=decoded_output)
 
     # ---------------- Models ---------------- #
     # Encoder model: from input image to latent space
@@ -73,7 +69,7 @@ def autoencoder(input_dims, filters, latent_dims):
     auto = keras.models.Model(inputs=input_img,
                               outputs=decoder(encoder(input_img)))
 
-    # Compile the autoencoder with Adam optimizer and binary cross-entropy loss
+    # Compile the autoencoder
     auto.compile(optimizer='adam', loss='binary_crossentropy')
 
     return encoder, decoder, auto
