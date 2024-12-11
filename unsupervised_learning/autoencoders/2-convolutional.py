@@ -35,35 +35,50 @@ def autoencoder(input_dims, filters, latent_dims):
 
     # ---------------- Decoder ---------------- #
     latent_input = keras.layers.Input(shape=latent_dims)
-    x = latent_input
-    for f in reversed(filters):
-        x = keras.layers.Conv2D(f, (3, 3),
-                                activation='relu', padding='same')(x)
-        x = keras.layers.UpSampling2D((2, 2))(x)
-    # Add the final convolutional layer to match input dimensions
-    decoded_output = keras.layers.Conv2D(input_dims[2], (3, 3),
-                                         activation='sigmoid',
-                                         padding='same')(x)
-    decoder = keras.models.Model(inputs=latent_input, outputs=decoded_output)
+
+    for idx, units in enumerate(reversed(filters)):
+        if idx != len(filters) - 1:
+            layer = keras.layers.Conv2D(
+                filters=units,
+                kernel_size=(3, 3),
+                strides=(1, 1),
+                padding="same",
+                activation="relu",
+            )
+            if idx == 0:
+                outputs = layer(latent_input)
+            else:
+                outputs = layer(outputs)
+        else:
+            layer = keras.layers.Conv2D(
+                filters=units,
+                kernel_size=(3, 3),
+                strides=(1, 1),
+                padding="valid",
+                activation="relu",
+            )
+            outputs = layer(outputs)
+
+        layer = keras.layers.UpSampling2D(size=(2, 2))
+
+        outputs = layer(outputs)
+
+    layer = keras.layers.Conv2D(
+        filters=input_dims[-1],
+        kernel_size=(3, 3),
+        strides=(1, 1),
+        padding="same",
+        activation="sigmoid",
+    )
+
+    outputs = layer(outputs)
 
     # ---------------- Models ---------------- #
     # Encoder model: from input image to latent space
     encoder = keras.models.Model(inputs=input_img, outputs=latent_space)
 
     # Decoder model: from latent space to reconstructed image
-    latent_input = keras.layers.Input(shape=latent_dims)
-    x = latent_input
-    for f in reversed(filters[:-1]):
-        x = keras.layers.Conv2D(f, (3, 3), activation='relu',
-                                padding='same')(x)
-        x = keras.layers.UpSampling2D((2, 2))(x)
-    x = keras.layers.Conv2D(filters[-1], (3, 3),
-                            activation='relu', padding='valid')(x)
-    x = keras.layers.UpSampling2D((2, 2))(x)  # Fix for shape mismatch
-    decoded_output = keras.layers.Conv2D(input_dims[2], (3, 3),
-                                         activation='sigmoid',
-                                         padding='same')(x)
-    decoder = keras.models.Model(inputs=latent_input, outputs=decoded_output)
+    decoder = keras.models.Model(inputs=latent_input, outputs=outputs)
 
     # Autoencoder model: combines encoder and decoder
     auto = keras.models.Model(inputs=input_img,
