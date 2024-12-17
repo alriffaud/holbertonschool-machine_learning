@@ -54,8 +54,8 @@ class WGAN_GP(keras.Model):
                                loss=self.generator.loss)
 
         # define the discriminator loss and optimizer
-        self.discriminator.loss = lambda x, y, gp: (
-            tf.reduce_mean(y) - tf.reduce_mean(x) + self.lambda_gp * gp)
+        self.discriminator.loss = lambda x, y: (
+                tf.reduce_mean(y) - tf.reduce_mean(x))
         self.discriminator.optimizer = keras.optimizers.Adam(
             learning_rate=self.learning_rate, beta_1=self.beta_1,
             beta_2=self.beta_2)
@@ -148,11 +148,13 @@ class WGAN_GP(keras.Model):
 
                 # compute the loss of the discriminator
                 disc_loss = self.discriminator.loss(real_output,
-                                                    fake_output, gp)
+                                                    fake_output)
+                gp = self.gradient_penalty(interpolated_samples)
+                new_disc_loss = disc_loss + self.lambda_gp * gp
 
             # update the discriminator weights
             gradients_of_discriminator = disc_tape.gradient(
-                disc_loss, self.discriminator.trainable_variables)
+                new_disc_loss, self.discriminator.trainable_variables)
             self.discriminator.optimizer.apply_gradients(
                 zip(gradients_of_discriminator,
                     self.discriminator.trainable_variables))
