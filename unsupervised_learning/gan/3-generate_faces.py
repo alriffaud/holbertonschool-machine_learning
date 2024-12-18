@@ -90,8 +90,3 @@ def convolutional_GenDiscr():
                      outputs=output_layer, name="discriminator")
 
     return generator(), get_discriminator()
-
-
-class prueba():
-    """ This class is for testing purposes. """
-    pass
