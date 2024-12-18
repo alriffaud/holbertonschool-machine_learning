@@ -7,39 +7,6 @@ from tensorflow.keras import layers, Model
 def convolutional_GenDiscr():
     """
     This function instantiates a generator and discriminator models for a GAN.
-    The generator should have the following architecture:
-        - A Dense layer with 2048 units and ReLU activation
-        - A Reshape layer with target shape (2, 2, 512)
-        - A Conv2DTranspose layer with 64 filters, 3x3 kernel size, and padding
-        same
-        - A BatchNormalization layer
-        - A ReLU activation
-        - A Conv2DTranspose layer with 16 filters, 3x3 kernel size, and padding
-        same
-        - A BatchNormalization layer
-        - A ReLU activation
-        - A Conv2DTranspose layer with 1 filter, 3x3 kernel size, and padding
-        same
-        - A BatchNormalization layer
-        - A tanh activation
-    The discriminator should have the following architecture:
-        - A Conv2D layer with 32 filters, 3x3 kernel size, and padding same
-        - A MaxPooling2D layer
-        - A tanh activation
-        - A Conv2D layer with 64 filters, 3x3 kernel size, and padding same
-        - A MaxPooling2D layer
-        - A tanh activation
-        - A Conv2D layer with 128 filters, 3x3 kernel size, and padding same
-        - A MaxPooling2D layer
-        - A tanh activation
-        - A Conv2D layer with 256 filters, 3x3 kernel size, and padding same
-        - A MaxPooling2D layer
-        - A tanh activation
-        - A Flatten layer
-        - A Dense layer with 1 unit
-    The models should be instantiated with the following names:
-        - Generator: "generator"
-        - Discriminator: "discriminator"
     Returns:
         The generator and discriminator models.
     """
@@ -123,5 +90,4 @@ def convolutional_GenDiscr():
         return Model(inputs=input_layer,
                      outputs=output_layer, name="discriminator")
 
-    # Return the generator and discriminator models
     return generator(), get_discriminator()
