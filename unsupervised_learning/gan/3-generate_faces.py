@@ -50,7 +50,6 @@ def convolutional_GenDiscr():
         return Model(inputs=input_layer,
                      outputs=output_layer, name="generator")
 
-    # Discriminator model
     def get_discriminator():
         """
         This function returns a discriminator model.
