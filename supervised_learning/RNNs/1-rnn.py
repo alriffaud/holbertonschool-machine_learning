@@ -27,6 +27,7 @@ def rnn(rnn_cell, X, h_0):
     H = np.zeros((t + 1, m, h))
     Y = np.zeros((t, m, rnn_cell.Wy.shape[1]))
     H[0] = h_0
+    # Perform forward propagation for each time step
     for step in range(t):
         H[step + 1], Y[step] = rnn_cell.forward(H[step], X[step])
     return H, Y
