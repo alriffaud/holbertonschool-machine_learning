@@ -72,10 +72,7 @@ class BidirectionalCell:
             - Y is a numpy.ndarray of shape (t, m, o) containing the outputs
             of the BidirectionalCell
         """
-        # Linear transformation followed by softmax
-        Z = np.dot(H, self.Wy) + self.by  # Compute logits
-        # Stable softmax
-        exp_z = np.exp(Z - np.max(Z, axis=-1, keepdims=True))
-        # Ensure `axis=-1` matches the last dimension
-        Y = exp_z / np.sum(exp_z, axis=-1, keepdims=True)
+        t, m, _ = H.shape
+        Y = np.dot(H, self.Wy) + self.by
+        Y = np.exp(Y) / np.sum(np.exp(Y), axis=2, keepdims=True)
         return Y
