@@ -23,29 +23,32 @@ def bi_rnn(bi_cell, X, h_0, h_t):
       - H is a numpy.ndarray containing all of the hidden states
       - Y is a numpy.ndarray containing all of the outputs
     """
-    t, m, _ = X.shape
-    h = h_0.shape[1]
+    t, m, i = X.shape
+    _, h = h_0.shape
 
-    # Initialize hidden states for forward and backward directions
+    # Initialize hidden states
     H_forward = np.zeros((t, m, h))
     H_backward = np.zeros((t, m, h))
 
-    # Forward direction
-    h_prev = h_0
+    # Forward pass
+    h_next = h_0
     for step in range(t):
-        h_prev = bi_cell.forward(h_prev, X[step])
-        H_forward[step] = h_prev
+        h_next = bi_cell.forward(h_next, X[step])
+        H_forward[step] = h_next
 
-    # Backward direction
-    h_next = h_t
+    # Backward pass
+    h_prev = h_t
     for step in reversed(range(t)):
-        h_next = bi_cell.backward(h_next, X[step])
-        H_backward[step] = h_next
+        h_prev = bi_cell.backward(h_prev, X[step])
+        H_backward[step] = h_prev
 
     # Concatenate forward and backward hidden states
-    H = np.concatenate((H_forward, H_backward), axis=-1)
+    H = np.concatenate((H_forward, H_backward), axis=2)
 
-    # Compute outputs
-    Y = np.array([bi_cell.output(h) for h in H])
+    # Calculate output Y
+    try:
+        Y = np.array([bi_cell.output(h) for h in H])
+    except ValueError as e:
+        raise
 
     return H, Y
