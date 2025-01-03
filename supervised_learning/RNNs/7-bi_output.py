@@ -74,5 +74,8 @@ class BidirectionalCell:
         """
         # Linear transformation followed by softmax
         Z = np.dot(H, self.Wy) + self.by  # Compute logits
-        Y = np.exp(Z) / np.sum(np.exp(Z), axis=-1, keepdims=True)  # Softmax
+        # Stable softmax
+        exp_z = np.exp(Z - np.max(Z, axis=-1, keepdims=True))
+        # Ensure `axis=-1` matches the last dimension
+        Y = exp_z / np.sum(exp_z, axis=-1, keepdims=True)
         return Y
