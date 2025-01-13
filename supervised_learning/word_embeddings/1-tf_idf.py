@@ -16,18 +16,19 @@ def tf_idf(sentences, vocab=None):
             - embeddings (numpy.ndarray): The TF-IDF matrix of shape (s, f).
             - features (list of str): The vocabulary words used as features.
     """
-    # Preprocess sentences: lowercase and remove special characters
-    def preprocess(sentence):
-        return re.sub(r'[^a-z\s]', '', sentence.lower())
+    # Preprocess sentences: Remove non-alphabetic characters and
+    # convert to lowercase
+    processed_sentences = []
+    for sentence in sentences:
+        words = re.findall(r'\b[a-zA-Z]{2,}\b', sentence.lower())
+        # Join words back into a sentence
+        processed_sentences.append(" ".join(words))
 
-    processed_sentences = [preprocess(sentence) for sentence in sentences]
-
-    # Build the vocabulary if not provided
+    # Build vocabulary if not provided
     if vocab is None:
-        words = set()
-        for sentence in processed_sentences:
-            words.update(sentence.split())
-        vocab = sorted(words)
+        vocab = sorted(set(
+            word for sentence in processed_sentences
+            for word in sentence.split()))
 
     # Compute TF-IDF for each sentence and term
     tf_idf_vect = TfidfVectorizer(vocabulary=vocab)
