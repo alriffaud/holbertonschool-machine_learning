@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """ This module defines the gensim_to_keras function. """
-from keras.layers import Embedding
-import numpy as np
+import tensorflow as tf
 
 
 def gensim_to_keras(model):
@@ -12,18 +11,15 @@ def gensim_to_keras(model):
     Returns:
         keras.layers.Embedding: A trainable Keras Embedding layer.
     """
-    # Extract the weights (word vectors) from the gensim model
-    weights = model.wv.vectors
-
     # Get the vocabulary size and embedding dimension
-    vocab_size, embedding_dim = weights.shape
+    vocab_size = len(model.wv.key_to_index)
+    embed_size = model.wv.vector_size
 
-    # Create the Keras Embedding layer
-    embedding_layer = Embedding(
+    # Initialize the Keras Embedding layer
+    keras_layer = tf.keras.layers.Embedding(
         input_dim=vocab_size,
-        output_dim=embedding_dim,
-        weights=[weights],
-        trainable=True  # Allowing further training of embeddings in Keras
+        output_dim=embed_size,
+        embeddings_initializer=tf.constant_initializer(model.wv.vectors)
     )
 
-    return embedding_layer
+    return keras_layer
