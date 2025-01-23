@@ -67,7 +67,7 @@ class RNNDecoder(tf.keras.layers.Layer):
         # Shape: (batch, 1, units + embedding)
 
         # Pass the concatenated input through the GRU
-        output, s = self.gru(concat_input, initial_state=s_prev)
+        output, s = self.gru(concat_input)
         # output shape: (batch, 1, units), s shape: (batch, units)
 
         # Pass the output through the dense layer to compute probabilities
