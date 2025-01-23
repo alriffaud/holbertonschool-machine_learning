@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
-"""
-Self-Attention layer for machine translation.
-"""
-
+""" This module defines Self-Attention layer for machine translation. """
 import tensorflow as tf
 
 
 class SelfAttention(tf.keras.layers.Layer):
     """
-    SelfAttention computes the attention scores and context vector
+    This class computes the attention scores and context vector
     for machine translation tasks based on Bahdanau et al. (2015).
     """
 
     def __init__(self, units):
         """
-        Initialize the SelfAttention layer.
-
+        This method initializes the SelfAttention layer.
         Args:
             units (int): Number of hidden units in the alignment model.
         """
@@ -28,14 +24,13 @@ class SelfAttention(tf.keras.layers.Layer):
 
     def call(self, s_prev, hidden_states):
         """
-        Perform the forward pass to compute the attention context and weights.
-
+        This method performs the forward pass to compute the attention
+        context and weights.
         Args:
             s_prev (tf.Tensor): Previous decoder hidden state,
                 shape (batch, units).
             hidden_states (tf.Tensor): Encoder hidden states,
                 shape (batch, input_seq_len, units).
-
         Returns:
             context (tf.Tensor): Context vector for the decoder,
                 shape (batch, units).
