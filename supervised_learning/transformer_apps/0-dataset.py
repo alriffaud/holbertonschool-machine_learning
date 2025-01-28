@@ -41,6 +41,7 @@ class Dataset:
         # Prepare a list of Portuguese and English sentences
         pt_sentences = []
         en_sentences = []
+        # Iterate over the dataset
         for pt, en in data:
             pt_sentences.append(pt.numpy().decode('utf-8'))
             en_sentences.append(en.numpy().decode('utf-8'))
