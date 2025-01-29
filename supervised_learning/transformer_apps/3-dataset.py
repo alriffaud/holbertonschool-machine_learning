@@ -22,25 +22,43 @@ class Dataset:
             max_len: Integer representing the maximum number of tokens allowed
                      in a sequence.
         """
-        # Set batch size and maximum sequence length
-        self.batch_size = batch_size
-        self.max_len = max_len
-
-        # Load dataset splits
-        self.data_train = tfds.load('ted_hrlr_translate/pt_to_en',
-                                    split='train', as_supervised=True)
-        self.data_valid = tfds.load('ted_hrlr_translate/pt_to_en',
-                                    split='validation', as_supervised=True)
+        # Load dataset
+        (self.data_train, self.data_valid), _ = tfds.load(
+            'ted_hrlr_translate/pt_to_en',
+            as_supervised=True,
+            split=['train', 'validation'],
+            with_info=True
+        )
 
         # Create tokenizers
         self.tokenizer_pt, self.tokenizer_en = self.tokenize_dataset(
             self.data_train)
 
-        # Process datasets
-        self.data_train = self.prepare_pipeline(self.data_train,
-                                                training=True)
-        self.data_valid = self.prepare_pipeline(self.data_valid,
-                                                training=False)
+        # Apply transformations to the training dataset
+        self.data_train = (
+            self.data_train
+            .map(self.tf_encode)  # Convert text to tokenized tensors
+            # Filter long sentences
+            .filter(lambda pt, en: tf.logical_and(
+                tf.size(pt) <= max_len, tf.size(en) <= max_len))
+            .cache()  # Cache for performance
+            .shuffle(20000)  # Shuffle dataset with large buffer size
+            # Pad sequences to the longest in batch
+            .padded_batch(batch_size, padded_shapes=([None], [None]))
+            # Optimize pipeline performance
+            .prefetch(tf.data.experimental.AUTOTUNE)
+        )
+
+        # Apply transformations to the validation dataset
+        self.data_valid = (
+            self.data_valid
+            .map(self.tf_encode)  # Convert text to tokenized tensors
+            # Filter long sentences
+            .filter(lambda pt, en: tf.logical_and(
+                tf.size(pt) <= max_len, tf.size(en) <= max_len))
+            # Pad sequences to the longest in batch
+            .padded_batch(batch_size, padded_shapes=([None], [None]))
+        )
 
     def tokenize_dataset(self, data):
         """
