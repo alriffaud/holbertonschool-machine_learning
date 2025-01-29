@@ -68,7 +68,7 @@ class Dataset:
 
     def encode(self, pt, en):
         """
-        Encodes a translation into tokens.
+        This method encodes a translation into tokens.
         Args:
             pt: tf.Tensor containing the Portuguese sentence
             en: tf.Tensor containing the corresponding English sentence
