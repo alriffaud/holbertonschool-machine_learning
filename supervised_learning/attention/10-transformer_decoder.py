@@ -69,7 +69,8 @@ class Decoder(tf.keras.layers.Layer):
 
         # Pass through each DecoderBlock
         for block in self.blocks:
-            x = block(x, encoder_output, training,
-                      look_ahead_mask, padding_mask)
+            x = block(x, encoder_output, training=training,
+                      look_ahead_mask=look_ahead_mask,
+                      padding_mask=padding_mask)
 
         return x

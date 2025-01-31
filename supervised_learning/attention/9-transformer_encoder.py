@@ -60,6 +60,6 @@ class Encoder(tf.keras.layers.Layer):
 
         # Pass through each encoder block
         for block in self.blocks:
-            x = block(x, training, mask)
+            x = block(x, training=training, mask=mask)
 
         return x
