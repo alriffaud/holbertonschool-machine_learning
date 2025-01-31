@@ -52,11 +52,14 @@ class Transformer(tf.keras.Model):
             Tensor of shape (batch, target_seq_len, target_vocab).
         """
         # Encoder forward pass
-        encoder_output = self.encoder(inputs, training, encoder_mask)
+        encoder_output = self.encoder(inputs, training=training,
+                                      mask=encoder_mask)
 
         # Decoder forward pass
-        decoder_output = self.decoder(target, encoder_output, training,
-                                      look_ahead_mask, decoder_mask)
+        decoder_output = self.decoder(target, encoder_output,
+                                      training=training,
+                                      look_ahead_mask=look_ahead_mask,
+                                      padding_mask=decoder_mask)
 
         # Project decoder output to target vocabulary space
         output = self.linear(decoder_output)
