@@ -37,9 +37,9 @@ def question_answer(question, reference):
     # - attention_mask: Mask to indicate non-padding tokens.
     # - token_type_ids: To distinguish question from context.
     input_tensors = [
-        inputs["input_ids"],      # Token IDs
-        inputs["attention_mask"],  # Attention mask for padding tokens
-        inputs["token_type_ids"]  # Token type IDs
+        inputs["input_ids"],
+        inputs["attention_mask"],
+        inputs["token_type_ids"]
     ]
 
     # Run inference on the model to get start and end logits
