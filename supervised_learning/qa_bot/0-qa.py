@@ -5,6 +5,9 @@ Question Answering using BERT from TensorFlow Hub and Hugging Face Transformers
 import tensorflow as tf
 import tensorflow_hub as hub
 from transformers import BertTokenizer
+import warnings
+warnings.filterwarnings("ignore",
+                        message="`clean_up_tokenization_spaces` was not set")
 
 
 def question_answer(question, reference):
@@ -17,17 +20,14 @@ def question_answer(question, reference):
         str or None: The extracted answer or None if no answer is found.
     """
     # Initialize the BERT tokenizer from Hugging Face Transformers
-    print("Initializing BERT Tokenizer...")
     tokenizer = BertTokenizer.from_pretrained(
         "bert-large-uncased-whole-word-masking-finetuned-squad"
     )
 
     # Load the BERT QA model from TensorFlow Hub
-    print("Loading BERT model from TensorFlow Hub...")
     model = hub.load("https://tfhub.dev/see--/bert-uncased-tf2-qa/1")
 
     # Tokenize the inputs using the BERT tokenizer
-    print("Tokenizing the question and reference document...")
     max_len = 512  # BERT maximum token length
     inputs = tokenizer(question, reference, return_tensors="tf",
                        max_length=max_len, truncation=True)
@@ -43,7 +43,6 @@ def question_answer(question, reference):
     ]
 
     # Run inference on the model to get start and end logits
-    print("Running inference on the model...")
     output = model(input_tensors)
 
     # Access the start and end logits from the output
@@ -54,22 +53,17 @@ def question_answer(question, reference):
 
     # Get the input sequence length from the input_ids tensor shape
     sequence_length = inputs["input_ids"].shape[1]
-    print(f"Input sequence length: {sequence_length}")
 
     # Determine the best start and end indices for the answer:
     # We ignore the special tokens at the beginning and end by slicing from
     # index 1 to sequence_length - 1.
-    print("Determining the best start and end indices for the answer...")
     start_index = tf.math.argmax(start_logits[0, 1:sequence_length - 1]) + 1
     end_index = tf.math.argmax(end_logits[0, 1:sequence_length - 1]) + 1
-    print(f"Start index: {start_index}, End index: {end_index}")
 
     # Extract the answer tokens using the best indices
-    print("Extracting the answer tokens...")
     answer_tokens = inputs["input_ids"][0][start_index: end_index + 1]
 
     # Decode the answer tokens to obtain the final answer string
-    print("Decoding the answer tokens...")
     answer = tokenizer.decode(answer_tokens, skip_special_tokens=True,
                               clean_up_tokenization_spaces=True)
 
@@ -78,5 +72,4 @@ def question_answer(question, reference):
         print("No valid answer found.")
         return None
 
-    print(f"Answer: {answer}")
     return answer
