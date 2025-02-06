@@ -69,7 +69,7 @@ def question_answer(question, reference):
 
     # If the decoded answer is empty or whitespace, return None
     if not answer.strip():
-        print("No valid answer found.")
+        # print("No valid answer found.")
         return None
 
     return answer
