@@ -31,11 +31,11 @@ def play(env, Q, max_steps=100):
     # For Gymnasium, reset() returns a tuple: (observation, info)
     state, _ = env.reset()
 
+    # Render and store the initial board state.
+    rendered_outputs.append(env.render())
+
     # Iterate over steps until max_steps is reached.
     for step in range(max_steps):
-        # Render and store the initial board state.
-        rendered_outputs.append(env.render())
-
         # Always exploit the Q-table by choosing the action with the maximum
         # Q-value.
         action = np.argmax(Q[state])
@@ -58,8 +58,5 @@ def play(env, Q, max_steps=100):
         # the loop.
         if terminated or truncated:
             break
-
-    # Ensure the final state is also rendered after the episode concludes
-    rendered_outputs.append(env.render())
 
     return total_reward, rendered_outputs
