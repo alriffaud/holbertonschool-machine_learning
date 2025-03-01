@@ -120,6 +120,7 @@ def build_model(input_shape, nb_actions):
     model.add(Conv2D(16, (8, 8), strides=4, activation='relu'))
     # Second convolutional layer: 32 filters, 4x4 kernel, stride 2
     model.add(Conv2D(32, (4, 4), strides=2, activation='relu'))
+    # Flatten the output for the fully connected layers
     model.add(Flatten())
     # Fully connected layer with 256 units
     model.add(Dense(256, activation='relu'))
@@ -158,9 +159,8 @@ def main():
     dqn.compile(Adam(learning_rate=0.00025), metrics=['mae'])
 
     # Train the agent
-    # Note: For a full training one might need millions of frames;
-    # here we use a smaller number for demo purposes.
-    dqn.fit(env, nb_steps=1000000, visualize=False, verbose=2)
+    # Note: For a full training one might need millions of frames
+    dqn.fit(env, nb_steps=2000000, visualize=False, verbose=2)
 
     # Save the final policy network weights
     dqn.save_weights('policy.h5', overwrite=True)

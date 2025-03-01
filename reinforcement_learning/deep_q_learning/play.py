@@ -119,6 +119,7 @@ def build_model(input_shape, nb_actions):
     model.add(Conv2D(16, (8, 8), strides=4, activation='relu'))
     # Second convolutional layer: 32 filters, 4x4 kernel, stride 2
     model.add(Conv2D(32, (4, 4), strides=2, activation='relu'))
+    # Flatten the output for the fully connected layers
     model.add(Flatten())
     # Fully connected layer with 256 units
     model.add(Dense(256, activation='relu'))
