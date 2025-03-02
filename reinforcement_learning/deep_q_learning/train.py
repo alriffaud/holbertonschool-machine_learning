@@ -160,7 +160,7 @@ def main():
 
     # Train the agent
     # Note: For a full training one might need millions of frames
-    dqn.fit(env, nb_steps=2000000, visualize=False, verbose=2)
+    dqn.fit(env, nb_steps=3000000, visualize=False, verbose=2)
 
     # Save the final policy network weights
     dqn.save_weights('policy.h5', overwrite=True)

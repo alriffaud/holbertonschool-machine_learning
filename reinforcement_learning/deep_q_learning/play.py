@@ -22,6 +22,16 @@ from rl.policy import GreedyQPolicy
 from keras.models import Sequential
 from keras.layers import Conv2D, Flatten, Dense, InputLayer, Reshape
 from rl.memory import SequentialMemory
+from rl.callbacks import Callback
+try:
+    import google.colab
+    import time
+    from IPython import display
+    import imageio
+    from IPython.display import display, clear_output, Image as IPyImage
+    IN_COLAB = True
+except ImportError:
+    IN_COLAB = False
 
 
 class GymnasiumWrapper(gym.Wrapper):
@@ -128,10 +138,57 @@ def build_model(input_shape, nb_actions):
     return model
 
 
+class VisualizationCallback(Callback):
+    """
+    Callback for visualizing the agent's gameplay using IPython.display.
+    """
+    def __init__(self, env, delay=0.02):
+        """
+        Initializes the VisualizationCallback.
+        Args:
+            env (gym.Env): The environment being visualized.
+            delay (float): Time (in seconds) to pause between rendering frames.
+        """
+        self.env = env
+        self.delay = delay
+        self.episode_frames = []  # Lista para almacenar frames
+
+    def on_action_end(self, action, logs={}):
+        """
+        Executes after an agent action and renders the frame using
+        IPython.display.
+        Args:
+            action (int): The action performed by the agent.
+            logs (dict): Training-related logs (optional).
+        """
+        # Captura el frame actual en modo 'rgb_array'
+        frame = self.env.render(mode='rgb_array')
+        self.episode_frames.append(frame)
+
+    def on_episode_end(self, episode, logs={}):
+        """
+        Executes after an episode ends, providing a short pause.
+        Args:
+            episode (int): The episode number that just finished.
+            logs (dict): Training-related logs (optional).
+        """
+        # Al final del episodio, genera un GIF y muéstralo
+        gif_filename = f"episode_{episode}.gif"
+        imageio.mimsave(gif_filename, self.episode_frames, fps=20)
+
+        display(IPyImage(filename=gif_filename))
+
+        # Reinicia la lista de frames para el siguiente episodio
+        self.episode_frames = []
+        time.sleep(1)  # Pausa entre episodios
+
+
 def main():
+    # Set render_mode based on environment
+    render_mode = 'rgb_array' if IN_COLAB else 'human'
     # Create Atari Breakout environment with rendering enabled for human
     # visualization
-    env = gym.make('ALE/Breakout-v5', render_mode='human')
+    env = gym.make('ALE/Breakout-v5', render_mode=render_mode)
     # Apply custom preprocessing
     env = CustomAtariPreprocessing(env)
     # Wrap the environment to adapt its API for keras-rl
@@ -159,8 +216,17 @@ def main():
     # Load the previously trained weights
     dqn.load_weights('policy.h5')
 
-    # Test the agent for a fixed number of episodes (e.g., 5 episodes)
-    dqn.test(env, nb_episodes=5, visualize=True)
+    if IN_COLAB:
+        # Use the VisualizationCallback for rendering the game
+        visualization_callback = VisualizationCallback(env, delay=0.02)
+        scores = dqn.test(env, nb_episodes=5, visualize=False,
+                          callbacks=[visualization_callback])
+    else:
+        # Test the agent for a fixed number of episodes (e.g., 5 episodes)
+        dqn.test(env, nb_episodes=5, visualize=True)
+
+    # Close the environment after testing
+        env.close()
 
 
 if __name__ == '__main__':
