@@ -72,7 +72,7 @@ class GymnasiumWrapper(gym.Wrapper):
         Args:
             mode (str): Rendering mode.
         """
-        self.env.render()
+        return self.env.render()
 
 
 class CustomAtariPreprocessing(gym.ObservationWrapper):
@@ -151,7 +151,7 @@ class VisualizationCallback(Callback):
         """
         self.env = env
         self.delay = delay
-        self.episode_frames = []  # Lista para almacenar frames
+        self.episode_frames = []  # List to store frames for GIFs
 
     def on_action_end(self, action, logs={}):
         """
@@ -161,7 +161,7 @@ class VisualizationCallback(Callback):
             action (int): The action performed by the agent.
             logs (dict): Training-related logs (optional).
         """
-        # Captura el frame actual en modo 'rgb_array'
+        # Capture the current frame in 'rgb_array' mode
         frame = self.env.render(mode='rgb_array')
         self.episode_frames.append(frame)
 
@@ -172,15 +172,15 @@ class VisualizationCallback(Callback):
             episode (int): The episode number that just finished.
             logs (dict): Training-related logs (optional).
         """
-        # Al final del episodio, genera un GIF y muéstralo
+        # At the end of the episode, generate a GIF and show it
         gif_filename = f"episode_{episode}.gif"
         imageio.mimsave(gif_filename, self.episode_frames, fps=20)
 
         display(IPyImage(filename=gif_filename))
 
-        # Reinicia la lista de frames para el siguiente episodio
+        # Reset the frame list for the next episode
         self.episode_frames = []
-        time.sleep(1)  # Pausa entre episodios
+        time.sleep(1)  # Pause between episodes
 
 
 def main():
