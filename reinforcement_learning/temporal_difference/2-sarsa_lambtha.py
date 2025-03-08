@@ -59,13 +59,13 @@ def sarsa_lambtha(env, Q, lambtha, episodes=5000, max_steps=100,
             # Update the eligibility trace for the current state-action pair
             E[state, action] += 1
 
-            # Decay eligibility traces for all state-action pairs
-            E *= gamma * lambtha
-
             # Update the Q table for all state-action pairs using the
             # eligibility
             # traces
             Q += alpha * delta * E
+
+            # Decay eligibility traces for all state-action pairs
+            E *= gamma * lambtha
 
             # Update state and action for the next step
             state, action = next_state, next_action
