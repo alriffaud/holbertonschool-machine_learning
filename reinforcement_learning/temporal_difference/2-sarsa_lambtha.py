@@ -24,6 +24,9 @@ def sarsa_lambtha(env, Q, lambtha, episodes=5000, max_steps=100,
     Returns:
         - Updated Q, the Q table.
     """
+    # Get the value of epsilon for the first episode
+    initial_epsilon = epsilon
+
     # Iterate over each episode
     for episode in range(episodes):
         # Initialize eligibility traces for all state-action pairs to 0
@@ -56,13 +59,13 @@ def sarsa_lambtha(env, Q, lambtha, episodes=5000, max_steps=100,
             # Update the eligibility trace for the current state-action pair
             E[state, action] += 1
 
+            # Decay eligibility traces for all state-action pairs
+            E *= gamma * lambtha
+
             # Update the Q table for all state-action pairs using the
             # eligibility
             # traces
             Q += alpha * delta * E
-
-            # Decay eligibility traces for all state-action pairs
-            E *= gamma * lambtha
 
             # Update state and action for the next step
             state, action = next_state, next_action
@@ -71,6 +74,7 @@ def sarsa_lambtha(env, Q, lambtha, episodes=5000, max_steps=100,
             if terminated or truncated:
                 break
 
-        # Decay epsilon after each episode (linear decay)
-        epsilon = max(min_epsilon, epsilon - epsilon_decay)
+        # Exploration rate decay
+        epsilon = (min_epsilon + (initial_epsilon - min_epsilon) *
+                   np.exp(-epsilon_decay * episode))
     return Q
