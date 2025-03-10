@@ -47,20 +47,20 @@ def policy_gradient(state, weight):
     # multiplication)
     if state.ndim == 1:
         state = state.reshape(1, -1)
-    
+
     # Compute action probabilities using the policy function
     probs = policy(state, weight)  # Shape: (1, num_actions)
-    
+
     # Sample an action using the probability distribution (flattening
     # probs to 1D)
     action = np.random.choice(probs.shape[1], p=probs.flatten())
-    
+
     # Create a one-hot vector for the chosen action (shape: (1, num_actions))
     one_hot = np.zeros_like(probs)
     one_hot[0, action] = 1
-    
+
     # Compute the gradient: state.T dot (one_hot - probs)
     # This yields a gradient of shape (num_features, num_actions)
     grad = np.dot(state.T, (one_hot - probs))
-    
+
     return action, grad
