@@ -3,11 +3,12 @@
 Module for training a policy gradient agent using the REINFORCE algorithm.
 """
 import numpy as np
+import gymnasium as gym
 # Import the policy_gradient function from the policy_gradient module
 policy_gradient = __import__('policy_gradient').policy_gradient
 
 
-def train(env, nb_episodes, alpha=0.000045, gamma=0.98):
+def train(env, nb_episodes, alpha=0.000045, gamma=0.98, show_result=False):
     """
     This funtion trains a policy gradient agent using Monte-Carlo updates
     (REINFORCE).
@@ -77,6 +78,11 @@ def train(env, nb_episodes, alpha=0.000045, gamma=0.98):
         scores.append(total_reward)
 
         # Print the current episode and score in the required format
-        print("Episode: {} Score: {}".format(episode, total_reward))
+        if (episode + 1) % 100 == 0:
+            print(f"Episode {episode + 1}: Score {total_reward}")
+
+        # Render every 1000 episodes if show_result is True
+        if show_result and (episode + 1) % 1000 == 0:
+            env.render()
 
     return scores
