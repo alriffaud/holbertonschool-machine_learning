@@ -13,4 +13,4 @@ def index(df):
     Returns:
         The modified DataFrame
     """
-    return df.set_index('Timestamp')
+    return df.set_index('Timestamp', inplace=True)
