@@ -2,7 +2,6 @@
 """
 This script defines the function array
 """
-import numpy as np
 
 
 def array(df):
@@ -17,10 +16,10 @@ def array(df):
         The newly created numpy.ndarray
     """
     # Select only the 'Datetime' and 'Close' columns
-    df = df[['High', 'Close']]
+    df_subset = df[['High', 'Close']]
 
     # Select the last 10 rows
-    df = df.tail(10)
+    df_subset = df_subset.tail(10)
 
     # Convert the DataFrame to a numpy array
-    return np.array(df)
+    return df_subset.to_numpy()
