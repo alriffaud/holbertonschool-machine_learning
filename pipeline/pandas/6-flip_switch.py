@@ -2,7 +2,6 @@
 """
 This script defines the function flip_switch
 """
-import pandas as pd
 
 
 def flip_switch(df):
