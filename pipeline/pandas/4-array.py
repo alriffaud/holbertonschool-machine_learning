@@ -15,7 +15,7 @@ def array(df):
     Returns:
         The newly created numpy.ndarray
     """
-    # Select only the 'Datetime' and 'Close' columns
+    # Select only the High and Close columns
     df_subset = df[['High', 'Close']]
 
     # Select the last 10 rows
