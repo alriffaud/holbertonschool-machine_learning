@@ -6,20 +6,19 @@
 
 DELIMITER //
 
+DROP PROCEDURE IF EXISTS ComputeAverageScoreForUser //
+
 CREATE PROCEDURE ComputeAverageScoreForUser(
     IN user_id INT
 )
 BEGIN
-    DECLARE avgScore FLOAT;
-    
-    -- Calculate the average score for the given user_id
-    SELECT IFNULL(AVG(score), 0) INTO avgScore
-    FROM corrections
-    WHERE user_id = user_id;
-    
-    -- Update the average_score in the users table for the given user
     UPDATE users
-    SET average_score = avgScore
+    -- Calculate the average score for the given user_id
+    SET average_score = (
+        SELECT AVG(score)
+        FROM corrections
+        WHERE corrections.user_id = user_id
+    )
     WHERE id = user_id;
 END;
 //
