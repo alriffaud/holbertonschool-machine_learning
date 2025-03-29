@@ -6,6 +6,9 @@
 --  score, the score value for the correction
 
 DELIMITER //
+
+DROP PROCEDURE IF EXISTS AddBonus //
+
 CREATE PROCEDURE AddBonus(
     IN user_id INT,
     IN project_name VARCHAR(255),
