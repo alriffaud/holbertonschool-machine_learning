@@ -6,7 +6,11 @@
 --  lifespan until 2020 (in years)
 -- You should use attributes formed and split for computing the lifespan
 
-SELECT band_name, (2020 - formed) AS lifespan
+SELECT band_name,
+    CASE
+        WHEN split IS NULL THEN (2020 - formed)
+        ELSE (split - formed)
+    END AS lifespan
 FROM metal_bands
 WHERE style LIKE '%Glam rock%'
 ORDER BY lifespan DESC;
