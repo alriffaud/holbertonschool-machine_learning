@@ -6,27 +6,27 @@ from pymongo import MongoClient
 METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"]
 
 
-def get_logs_stats(mongo_collection, option=None):
+def get_logs_stats(mongo_collection):
     """
     This function gets statistics about Nginx logs stored in MongoDB.
     Args:
         mongo_collection: the pymongo collection object.
         option: the method to search for.
     """
-    items = {}
-    if option:
-        value = mongo_collection.count_documents(
-            {"method": {"$regex": option}})
-        print("\tmethod {}: {}".format(option, value))
-        return
+    total_logs = mongo_collection.count_documents({})
+    print(f"{total_logs} logs")
 
-    result = mongo_collection.count_documents(items)
-    print("{} logs".format(result))
+    methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
     print("Methods:")
-    for method in METHODS:
-        get_logs_stats(nginx_collection, method)
-    status_check = mongo_collection.count_documents({"path": "/status"})
-    print("{} status check".format(status_check))
+    for method in methods:
+        count = mongo_collection.count_documents({"method": method})
+        print(f"\tmethod {method}: {count}")
+
+    status_check_count = mongo_collection.count_documents({
+        "method": "GET",
+        "path": "/status"
+    })
+    print(f"{status_check_count} status check")
 
 
 if __name__ == "__main__":
