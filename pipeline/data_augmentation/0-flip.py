@@ -2,6 +2,7 @@
 """ This module defines the flip_image function """
 import tensorflow as tf
 
+
 def flip_image(image):
     """
     This function flips an image horizontally.
